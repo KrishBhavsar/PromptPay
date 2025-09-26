@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, ChevronDown, LogOut } from "lucide-react";
+import {
+  Search,
+  ChevronDown,
+  LogOut,
+  X,
+  Upload,
+  ImageIcon,
+} from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import PromptCard from "@/components/ui/PromptCard";
 
@@ -99,11 +106,20 @@ export default function Marketplace() {
   const [activeTab, setActiveTab] = useState("Model");
   const [searchQuery, setSearchQuery] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    title: "",
+    description: "",
+    price: "",
+    thumbnail: null as File | null,
+  });
+  const [thumbnailPreview, setThumbnailPreview] = useState("");
+
   const menuRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const tabs = ["Model", "Filters", "Price Range", "Sort By", "License"];
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -120,11 +136,37 @@ export default function Marketplace() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadForm((prev) => ({ ...prev, thumbnail: file }));
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setThumbnailPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmitPrompt = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission here
+    console.log("Uploading prompt:", uploadForm);
+    // Reset form and close modal
+    setUploadForm({ title: "", description: "", price: "", thumbnail: null });
+    setThumbnailPreview("");
+    setIsUploadModalOpen(false);
+  };
+
+  const resetModal = () => {
+    setUploadForm({ title: "", description: "", price: "", thumbnail: null });
+    setThumbnailPreview("");
+    setIsUploadModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-slate-800 to-black text-white">
-      {/* Background geometric elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Hexagonal shapes */}
         <div className="absolute top-20 left-20 w-16 h-16 border border-white/20 transform rotate-12">
           <div
             className="w-full h-full bg-transparent border border-white/10"
@@ -153,7 +195,6 @@ export default function Marketplace() {
           ></div>
         </div>
 
-        {/* Triangular shapes */}
         <div className="absolute top-96 left-20 w-12 h-12 border border-white/15 transform rotate-45">
           <div
             className="w-full h-full bg-transparent border border-white/10"
@@ -161,27 +202,22 @@ export default function Marketplace() {
           ></div>
         </div>
 
-        {/* Diamond shapes */}
         <div className="absolute top-72 right-24 w-10 h-10 border border-white/16 transform rotate-45 bg-white/5"></div>
         <div className="absolute bottom-96 left-60 w-14 h-14 border border-white/12 transform rotate-30 bg-white/3"></div>
 
-        {/* Dots */}
         <div className="absolute top-16 right-16 w-2 h-2 bg-white/30 rounded-full"></div>
         <div className="absolute top-80 right-80 w-1 h-1 bg-white/25 rounded-full"></div>
         <div className="absolute bottom-40 right-40 w-2 h-2 bg-white/20 rounded-full"></div>
 
-        {/* Large gradient orbs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-gray-600/20 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-tl from-slate-500/25 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-gray-700/15 to-transparent rounded-full blur-2xl"></div>
       </div>
 
-      {/* Header */}
       <header className="relative z-20 border-b border-white/20 bg-black/30 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              {/* Logo */}
               <div className="w-8 h-8 mr-4">
                 <svg
                   viewBox="0 0 24 24"
@@ -197,19 +233,19 @@ export default function Marketplace() {
             </div>
 
             <div className="flex items-center space-x-4">
-              {/* Upload Prompt Button */}
-              <button className="px-6 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white font-medium hover:bg-white/20 transition-all duration-300 hover:scale-105">
+              <button
+                onClick={() => setIsUploadModalOpen(true)}
+                className="px-6 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white font-medium hover:bg-white/20 transition-all duration-300 hover:scale-105"
+              >
                 Upload Prompt
               </button>
 
-              {/* User Menu */}
               {ready && authenticated && user && (
                 <div className="relative z-50" ref={menuRef}>
                   <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     className="flex items-center space-x-3 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white hover:bg-white/20 transition-all duration-300"
                   >
-                    {/* User Avatar */}
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                       {user.email?.charAt(0).toUpperCase() ||
                         user.phone?.charAt(-1) ||
@@ -251,26 +287,6 @@ export default function Marketplace() {
                         </div>
                       </div>
 
-                      {/* Menu Items */}
-                      {/* <div className="py-2">
-                        <button className="w-full flex items-center space-x-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-                          <User className="w-5 h-5" />
-                          <span className="text-sm font-medium">Profile</span>
-                        </button>
-
-                        {user.wallet?.address && (
-                          <button className="w-full flex items-center space-x-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-                            <Wallet className="w-5 h-5" />
-                            <span className="text-sm font-medium">Wallet</span>
-                          </button>
-                        )}
-
-                        <button className="w-full flex items-center space-x-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-                          <Settings className="w-5 h-5" />
-                          <span className="text-sm font-medium">Settings</span>
-                        </button>
-                      </div> */}
-
                       {/* Logout */}
                       <div className="border-t border-white/20 py-2">
                         <button
@@ -309,6 +325,171 @@ export default function Marketplace() {
           </div>
         </div>
       </header>
+
+      {/* Upload Modal */}
+      {isUploadModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={resetModal}
+          ></div>
+
+          {/* Modal */}
+          <div className="relative w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-8 py-6 border-b border-white/20">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Upload Prompt</h2>
+                <p className="text-white/60 text-sm mt-1">
+                  Share your creative prompt with the community
+                </p>
+              </div>
+              <button
+                onClick={resetModal}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors duration-200"
+              >
+                <X className="w-6 h-6 text-white/60 hover:text-white" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSubmitPrompt} className="p-8 space-y-6">
+              {/* Title Input */}
+              <div className="space-y-2">
+                <label className="text-white font-medium text-sm">
+                  Prompt Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter a catchy title for your prompt..."
+                  value={uploadForm.title}
+                  onChange={(e) =>
+                    setUploadForm((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }))
+                  }
+                  className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/15 transition-all duration-300"
+                  required
+                />
+              </div>
+
+              {/* Description Input */}
+              <div className="space-y-2">
+                <label className="text-white font-medium text-sm">
+                  Description
+                </label>
+                <textarea
+                  placeholder="Describe your prompt in detail..."
+                  value={uploadForm.description}
+                  onChange={(e) =>
+                    setUploadForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  rows={4}
+                  className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/15 transition-all duration-300 resize-none"
+                  required
+                />
+              </div>
+
+              {/* Thumbnail Upload */}
+              <div className="space-y-2">
+                <label className="text-white font-medium text-sm">
+                  Thumbnail
+                </label>
+                <div className="relative">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleThumbnailChange}
+                    className="hidden"
+                  />
+
+                  {thumbnailPreview ? (
+                    <div className="relative group">
+                      <img
+                        src={thumbnailPreview}
+                        alt="Thumbnail preview"
+                        className="w-full h-48 object-cover rounded-xl border border-white/30"
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white font-medium hover:bg-white/30 transition-all duration-200"
+                        >
+                          Change Image
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full h-48 bg-white/5 backdrop-blur-sm border-2 border-dashed border-white/30 rounded-xl flex flex-col items-center justify-center text-white/60 hover:text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 group"
+                    >
+                      <ImageIcon className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform duration-200" />
+                      <p className="font-medium">Click to upload thumbnail</p>
+                      <p className="text-sm text-white/40 mt-1">
+                        PNG, JPG, GIF up to 10MB
+                      </p>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Price Input */}
+              <div className="space-y-2">
+                <label className="text-white font-medium text-sm">
+                  Price (USD)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 font-medium">
+                    $
+                  </span>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    step="0.01"
+                    min="0"
+                    value={uploadForm.price}
+                    onChange={(e) =>
+                      setUploadForm((prev) => ({
+                        ...prev,
+                        price: e.target.value,
+                      }))
+                    }
+                    className="w-full pl-8 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/15 transition-all duration-300"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  onClick={resetModal}
+                  className="px-6 py-3 text-white/80 hover:text-white font-medium transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span>Upload Prompt</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <main className="relative z-10 container mx-auto px-6 py-6">
         {/* Search Bar */}
