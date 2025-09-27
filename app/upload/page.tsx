@@ -6,6 +6,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { generatePromptPreview } from "../../lib/utils/generatePromptImage";
 import { encryptAndStorePrompt } from "@/lib/utils/encryptAndStorePrompt";
+import { uploadBase64ToCloudinary, uploadBase64ToCloudinaryUnsigned } from "@/lib/utils/uploadBase64ToCloudinary";
 
 export default function UploadPage() {
   const { ready, authenticated } = usePrivy();
@@ -72,6 +73,10 @@ export default function UploadPage() {
 
     const hash = await encryptAndStorePrompt(uploadForm.description);
     console.log("Encrypted and stored prompt with hash:", hash);
+
+    const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
+    console.log("response from cloudinary upload", response);
+
 
     // Reset form and redirect back to marketplace
     // setUploadForm({ title: "", description: "", price: "", thumbnail: null });
