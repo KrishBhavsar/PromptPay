@@ -232,7 +232,7 @@ export default function Marketplace() {
                   action={{
                     type: "login",
                     options: {
-                      loginMethods: ["email", "wallet", "google"],
+                      loginMethods: ["email", "wallet"],
                     },
                   }}
                   size={40}
