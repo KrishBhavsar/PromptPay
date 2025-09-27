@@ -39,7 +39,7 @@ const AuthButton = () => {
       {/* GET STARTED Button - Always visible and clickable */}
       <button
         onClick={handleGetStarted}
-        className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white text-lg font-medium hover:bg-white/20 transition-all duration-300 shadow-2xl hover:shadow-white/20 hover:scale-105"
+        className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white text-lg font-medium hover:bg-white/20 transition-all duration-300 shadow-2xl"
       >
         GET STARTED
       </button>
