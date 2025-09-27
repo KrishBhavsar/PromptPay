@@ -12,7 +12,7 @@ PromptPay connects prompt creators with users who want better AI results. Creato
 
 ## Architecture
 
-![PromptPay Architecture](/arch.png)
+![PromptPay Architecture](public/arch.png)
 
 ## Tech Stack
 
