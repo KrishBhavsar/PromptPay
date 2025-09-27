@@ -932,7 +932,7 @@ export const contractABI = [
     }
 ] as const;
 
-export const BACKEND_URL = "https://726cc7d5ab46.ngrok-free.app";
+export const BACKEND_URL = "https://f2f43feb68e2.ngrok-free.app";
 
 export const PAYPAL_USDC_ADDRESS = "0xCaC524BcA292aaade2DF8A05cC58F0a65B1B3bB9";
 

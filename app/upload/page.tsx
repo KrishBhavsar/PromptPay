@@ -688,10 +688,10 @@ export default function UploadPage() {
               {/* Generated Image */}
               <div className="relative bg-slate-800/40 rounded-xl p-4 mb-6">
                 <img
-                  src={`data:image/png;base64,${generatedImage}`}
-                  alt="Generated preview"
-                  className="w-full max-h-96 object-contain rounded-lg"
-                />
+  src={generatedImage.startsWith('data:') ? generatedImage : `data:image/png;base64,${generatedImage}`}
+  alt="Generated preview"
+  className="w-full max-h-96 object-contain rounded-lg"
+/>
               </div>
 
               {/* Prompt Info */}
