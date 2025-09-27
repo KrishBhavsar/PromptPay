@@ -1,68 +1,18 @@
 import React from "react";
-import { Trophy, Medal, Award, X } from "lucide-react";
-
-interface LeaderboardEntry {
-  id: number;
-  address: string;
-  points: number;
-}
+import { Trophy, Medal, Award, X, RefreshCw, AlertCircle } from "lucide-react";
+import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 
 interface LeaderboardProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Mock data - replace with actual data source
-const mockLeaderboardData: LeaderboardEntry[] = [
-  {
-    id: 1,
-    address: "0x742d35Cc6634C0532925a3b8D432C3e0a32C0532",
-    points: 2450,
-  },
-  {
-    id: 2,
-    address: "0x8ba1f109551bD432C3Cc6634C0532925a3b8D4321",
-    points: 2180,
-  },
-  {
-    id: 3,
-    address: "0x439c62F5C929C3e0a32C053295a3b8D432C3e0a3",
-    points: 1950,
-  },
-  {
-    id: 4,
-    address: "0x123d35Cc6634C0532925a3b8D432C3e0a32C0789",
-    points: 1720,
-  },
-  {
-    id: 5,
-    address: "0x567d35Cc6634C0532925a3b8D432C3e0a32C0456",
-    points: 1540,
-  },
-  {
-    id: 6,
-    address: "0x891d35Cc6634C0532925a3b8D432C3e0a32C0123",
-    points: 1320,
-  },
-  {
-    id: 7,
-    address: "0x234d35Cc6634C0532925a3b8D432C3e0a32C0890",
-    points: 1180,
-  },
-  {
-    id: 8,
-    address: "0x678d35Cc6634C0532925a3b8D432C3e0a32C0567",
-    points: 1050,
-  },
-  { id: 9, address: "0x345d35Cc6634C0532925a3b8D432C3e0a32C0234", points: 920 },
-  {
-    id: 10,
-    address: "0x901d35Cc6634C0532925a3b8D432C3e0a32C0678",
-    points: 850,
-  },
-];
-
 const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
+  const { data, loading, error, refetch } = useLeaderboard({
+    baseUrl: "https://f2f43feb68e2.ngrok-free.app",
+    refreshInterval: 30000, // Auto-refresh every 30 seconds
+  });
+
   if (!isOpen) return null;
 
   const formatAddress = (address: string) => {
@@ -97,6 +47,137 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
       default:
         return "bg-slate-800/40 border-slate-600/30";
     }
+  };
+
+  const renderContent = () => {
+    if (loading && !data) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mb-4"></div>
+          <p className="text-slate-300 text-lg">Loading leaderboard...</p>
+          <p className="text-slate-400 text-sm mt-2">
+            Fetching latest rankings
+          </p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16">
+          <AlertCircle className="w-16 h-16 text-red-400 mb-4" />
+          <p className="text-red-300 text-lg mb-2">
+            Failed to load leaderboard
+          </p>
+          <p className="text-slate-400 text-sm mb-6 text-center max-w-md">
+            {error}
+          </p>
+          <button
+            onClick={refetch}
+            className="flex items-center space-x-2 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-300 px-6 py-3 rounded-lg transition-all duration-200"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Try Again</span>
+          </button>
+        </div>
+      );
+    }
+
+    if (!data || data.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16">
+          <Trophy className="w-16 h-16 text-slate-500 mb-4" />
+          <p className="text-slate-300 text-lg mb-2">No rankings yet</p>
+          <p className="text-slate-400 text-sm text-center max-w-md">
+            Be the first to earn points and appear on the leaderboard!
+          </p>
+        </div>
+      );
+    }
+
+    const totalPoints = data.reduce((sum, entry) => sum + entry.score, 0);
+    const averagePoints = Math.round(totalPoints / data.length);
+
+    return (
+      <>
+        {/* Header */}
+        <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl mb-4 text-slate-300 font-medium text-sm">
+          <div className="col-span-1">Rank</div>
+          <div className="col-span-7">Address</div>
+          <div className="col-span-4 text-right">Points</div>
+        </div>
+
+        {/* Leaderboard Entries */}
+        <div className="space-y-3">
+          {data.map((entry) => (
+            <div
+              key={entry.address}
+              className={`grid grid-cols-12 gap-4 px-6 py-4 backdrop-blur-sm border rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${getRankStyle(
+                entry.rank
+              )}`}
+            >
+              {/* Rank */}
+              <div className="col-span-1 flex items-center">
+                {getRankIcon(entry.rank)}
+              </div>
+
+              {/* Address */}
+              <div className="col-span-7 flex items-center">
+                <div className="flex items-center space-x-3">
+                  {/* Avatar */}
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded-full flex items-center justify-center text-white font-bold text-sm border border-white/20">
+                    {entry.address.slice(2, 4).toUpperCase()}
+                  </div>
+                  {/* Address Text */}
+                  <div>
+                    <div className="text-slate-100 font-medium">
+                      {formatAddress(entry.address)}
+                    </div>
+                    <div className="text-slate-400 text-xs">
+                      Rank #{entry.rank}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Points */}
+              <div className="col-span-4 flex items-center justify-end">
+                <div className="text-right">
+                  <div className="text-slate-100 font-bold text-lg">
+                    {entry.score.toLocaleString()}
+                  </div>
+                  <div className="text-slate-400 text-xs">points</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer Stats */}
+        <div className="mt-8 pt-6 border-t border-slate-600/30">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
+              <div className="text-2xl font-bold text-slate-100">
+                {data.length}
+              </div>
+              <div className="text-slate-400 text-sm">Total Participants</div>
+            </div>
+            <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
+              <div className="text-2xl font-bold text-slate-100">
+                {totalPoints.toLocaleString()}
+              </div>
+              <div className="text-slate-400 text-sm">Total Points</div>
+            </div>
+            <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
+              <div className="text-2xl font-bold text-slate-100">
+                {averagePoints.toLocaleString()}
+              </div>
+              <div className="text-slate-400 text-sm">Average Points</div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
   };
 
   return (
@@ -151,102 +232,33 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-slate-700/50 rounded-full transition-colors duration-200 group"
-          >
-            <X className="w-6 h-6 text-slate-400 group-hover:text-slate-200" />
-          </button>
+          <div className="flex items-center space-x-2">
+            {/* Refresh Button */}
+            <button
+              onClick={refetch}
+              disabled={loading}
+              className="p-2 hover:bg-slate-700/50 rounded-full transition-all duration-200 group disabled:opacity-50"
+              title="Refresh leaderboard"
+            >
+              <RefreshCw
+                className={`w-5 h-5 text-slate-400 group-hover:text-slate-200 ${
+                  loading ? "animate-spin" : ""
+                }`}
+              />
+            </button>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-700/50 rounded-full transition-colors duration-200 group"
+            >
+              <X className="w-6 h-6 text-slate-400 group-hover:text-slate-200" />
+            </button>
+          </div>
         </div>
 
         {/* Leaderboard Content */}
         <div className="relative p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          {/* Header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl mb-4 text-slate-300 font-medium text-sm">
-            <div className="col-span-1">Rank</div>
-            <div className="col-span-7">Address</div>
-            <div className="col-span-4 text-right">Points</div>
-          </div>
-
-          {/* Leaderboard Entries */}
-          <div className="space-y-3">
-            {mockLeaderboardData.map((entry, index) => {
-              const rank = index + 1;
-              return (
-                <div
-                  key={entry.id}
-                  className={`grid grid-cols-12 gap-4 px-6 py-4 backdrop-blur-sm border rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${getRankStyle(
-                    rank
-                  )}`}
-                >
-                  {/* Rank */}
-                  <div className="col-span-1 flex items-center">
-                    {getRankIcon(rank)}
-                  </div>
-
-                  {/* Address */}
-                  <div className="col-span-7 flex items-center">
-                    <div className="flex items-center space-x-3">
-                      {/* Avatar */}
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded-full flex items-center justify-center text-white font-bold text-sm border border-white/20">
-                        {entry.address.slice(2, 4).toUpperCase()}
-                      </div>
-                      {/* Address Text */}
-                      <div>
-                        <div className="text-slate-100 font-medium">
-                          {formatAddress(entry.address)}
-                        </div>
-                        <div className="text-slate-400 text-xs">
-                          ID: {entry.id}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Points */}
-                  <div className="col-span-4 flex items-center justify-end">
-                    <div className="text-right">
-                      <div className="text-slate-100 font-bold text-lg">
-                        {entry.points.toLocaleString()}
-                      </div>
-                      <div className="text-slate-400 text-xs">points</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Footer Stats */}
-          <div className="mt-8 pt-6 border-t border-slate-600/30">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
-                <div className="text-2xl font-bold text-slate-100">
-                  {mockLeaderboardData.length}
-                </div>
-                <div className="text-slate-400 text-sm">Total Participants</div>
-              </div>
-              <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
-                <div className="text-2xl font-bold text-slate-100">
-                  {mockLeaderboardData
-                    .reduce((sum, entry) => sum + entry.points, 0)
-                    .toLocaleString()}
-                </div>
-                <div className="text-slate-400 text-sm">Total Points</div>
-              </div>
-              <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
-                <div className="text-2xl font-bold text-slate-100">
-                  {Math.round(
-                    mockLeaderboardData.reduce(
-                      (sum, entry) => sum + entry.points,
-                      0
-                    ) / mockLeaderboardData.length
-                  ).toLocaleString()}
-                </div>
-                <div className="text-slate-400 text-sm">Average Points</div>
-              </div>
-            </div>
-          </div>
+          {renderContent()}
         </div>
       </div>
     </div>
