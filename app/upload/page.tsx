@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Upload, Image, ArrowLeft, Brain, Sparkles, Loader2 } from "lucide-react";
+import {
+  X,
+  Upload,
+  Image,
+  ArrowLeft,
+  Brain,
+  Sparkles,
+  Loader2,
+} from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { generatePromptPreview } from "../../lib/utils/generatePromptImage";
@@ -10,7 +18,6 @@ import { uploadBase64ToCloudinaryUnsigned } from "@/lib/utils/uploadBase64ToClou
 import { useCreatePrompt } from "@/lib/hooks/useCreatePrompt";
 
 export default function UploadPage() {
-  const { ready, authenticated } = usePrivy();
   const router = useRouter();
   const [uploadForm, setUploadForm] = useState({
     title: "",
@@ -26,7 +33,7 @@ export default function UploadPage() {
   const [generationError, setGenerationError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { createPrompt, hash, } = useCreatePrompt();
+  const { createPrompt, hash } = useCreatePrompt();
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,7 +55,9 @@ export default function UploadPage() {
 
   const handleGenerateImage = async () => {
     if (!uploadForm.thumbnail || !uploadForm.description) {
-      setGenerationError("Please provide both a thumbnail image and prompt description");
+      setGenerationError(
+        "Please provide both a thumbnail image and prompt description"
+      );
       return;
     }
 
@@ -57,11 +66,16 @@ export default function UploadPage() {
     setShowModelModal(false);
 
     try {
-      const result = await generatePromptPreview(uploadForm.thumbnail, uploadForm.description);
+      const result = await generatePromptPreview(
+        uploadForm.thumbnail,
+        uploadForm.description
+      );
       setGeneratedImage(result.imageBase64);
       setShowImagePreviewModal(true);
     } catch (error) {
-      setGenerationError(error instanceof Error ? error.message : "Failed to generate image");
+      setGenerationError(
+        error instanceof Error ? error.message : "Failed to generate image"
+      );
       setShowModelModal(true); // Show modal again with error
     } finally {
       setIsGenerating(false);
@@ -85,7 +99,7 @@ export default function UploadPage() {
       model: "gemini-2.5",
       price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
       filecoinHash: hash.hash,
-      image: response.url
+      image: response.url,
     });
 
     console.log("createResponse from createPrompt", createResponse, hash);
@@ -306,8 +320,8 @@ export default function UploadPage() {
       </div>
 
       {/* Header */}
-      <header className="relative border-b border-white/20 bg-black/30 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
+      <header className="relative">
+        <div className="container mx-auto px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <button
@@ -316,7 +330,7 @@ export default function UploadPage() {
               >
                 <ArrowLeft className="w-6 h-6 text-white" />
               </button>
-              <div className="w-8 h-8 mr-4">
+              {/* <div className="w-8 h-8 mr-4">
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
@@ -327,7 +341,7 @@ export default function UploadPage() {
               </div>
               <h1 className="text-2xl font-bold text-white tracking-tight">
                 UPLOAD PROMPT
-              </h1>
+              </h1> */}
             </div>
           </div>
         </div>
@@ -477,7 +491,7 @@ export default function UploadPage() {
                 <button
                   type="button"
                   onClick={handleSubmitPrompt}
-                  className="px-12 py-4 bg-gradient-to-r from-blue-600/90 to-purple-600/90 hover:from-blue-600 hover:to-purple-600 text-white font-semibold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 flex items-center space-x-3 border border-blue-500/30"
+                  className="px-12 py-4 bg-gradient-to-r from-slate-900/98 via-gray-900/98 to-slate-800/98 text-white font-semibold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 flex items-center space-x-3 border border-blue-500/30"
                 >
                   <Upload className="w-6 h-6" />
                   <span>Upload Prompt</span>
@@ -606,10 +620,18 @@ export default function UploadPage() {
               <div className="mt-6 bg-slate-800/40 rounded-lg p-4">
                 <div className="flex items-center justify-center space-x-2 text-slate-300">
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
                 </div>
-                <p className="text-slate-400 text-sm mt-2">This may take a few seconds...</p>
+                <p className="text-slate-400 text-sm mt-2">
+                  This may take a few seconds...
+                </p>
               </div>
             </div>
           </div>
@@ -657,8 +679,12 @@ export default function UploadPage() {
 
               {/* Prompt Info */}
               <div className="bg-slate-800/40 rounded-lg p-4 mb-6">
-                <h4 className="text-slate-200 font-semibold mb-2">Your Prompt:</h4>
-                <p className="text-slate-300 text-sm">{uploadForm.description}</p>
+                <h4 className="text-slate-200 font-semibold mb-2">
+                  Your Prompt:
+                </h4>
+                <p className="text-slate-300 text-sm">
+                  {uploadForm.description}
+                </p>
               </div>
 
               {/* Action Buttons */}
