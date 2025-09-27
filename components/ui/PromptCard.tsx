@@ -20,6 +20,7 @@ import {
   FacebookIcon,
   LinkedinIcon,
 } from "lucide-react";
+import { useBuyPrompt } from "@/lib/hooks/buyPrompt";
 
 interface PromptCardProps {
   id: number;
@@ -113,7 +114,7 @@ export default function PromptCard({
     });
 
     console.log("result", result);
-    
+
     setModalState('result');
   };
 
@@ -441,19 +442,19 @@ export default function PromptCard({
                     {modalState === "loading"
                       ? "Generating..."
                       : modalState === "result"
-                      ? "Generation Complete"
-                      : modalState === "share"
-                      ? "Share Your Creation"
-                      : title}
+                        ? "Generation Complete"
+                        : modalState === "share"
+                          ? "Share Your Creation"
+                          : title}
                   </h2>
                   <p className="text-white/70 text-sm">
                     {modalState === "loading"
                       ? "AI is processing your image..."
                       : modalState === "result"
-                      ? "Your generated image is ready!"
-                      : modalState === "share"
-                      ? "Choose how to share your AI-generated image"
-                      : "Upload PNG image to generate with this prompt"}
+                        ? "Your generated image is ready!"
+                        : modalState === "share"
+                          ? "Choose how to share your AI-generated image"
+                          : "Upload PNG image to generate with this prompt"}
                   </p>
                 </div>
               </div>
