@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const AuthButton = () => {
-  const { ready, authenticated, login, logout, user } = usePrivy();
+  const { ready, authenticated, login } = usePrivy();
   const router = useRouter();
   //   const [showLoadingModal, setShowLoadingModal] = useState(false);
 

@@ -1,10 +1,18 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Search, ChevronDown, X, Upload, ImageIcon } from "lucide-react";
+import {
+  Search,
+  ChevronDown,
+  X,
+  Upload,
+  ImageIcon,
+  Trophy,
+} from "lucide-react";
 import { UserPill } from "@privy-io/react-auth/ui";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import PromptCard from "@/components/ui/PromptCard";
+import Leaderboard from "@/components/ui/Leaderboard"; // Import the new Leaderboard component
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { usePrompts } from "@/lib/hooks/useActivePrompts";
@@ -23,10 +31,10 @@ interface PromptCardData {
 
 export default function Marketplace() {
   const { ready, authenticated } = usePrivy();
-//   const [activeTab, setActiveTab] = useState("Model");
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false); // Add leaderboard state
   const [uploadForm, setUploadForm] = useState({
     title: "",
     description: "",
@@ -42,6 +50,10 @@ export default function Marketplace() {
     if (ready && authenticated) {
       router.push("/upload");
     }
+  };
+
+  const handleLeaderboardClick = () => {
+    setIsLeaderboardOpen(true);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -169,6 +181,17 @@ export default function Marketplace() {
             </div>
 
             <div className="flex items-center space-x-4">
+              {/* Leaderboard Button - show if authenticated */}
+              {ready && authenticated && (
+                <button
+                  onClick={handleLeaderboardClick}
+                  className="p-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 group"
+                  title="Leaderboard"
+                >
+                  <Trophy className="w-5 h-5 group-hover:text-yellow-400 transition-colors duration-300" />
+                </button>
+              )}
+
               {/* Upload Prompt Button - only show if authenticated */}
               {ready && authenticated && (
                 <button
@@ -204,6 +227,11 @@ export default function Marketplace() {
         </div>
       </header>
 
+      {/* Leaderboard Modal */}
+      <Leaderboard
+        isOpen={isLeaderboardOpen}
+        onClose={() => setIsLeaderboardOpen(false)}
+      />
       {/* Upload Modal - only show if authenticated */}
       {isUploadModalOpen && ready && authenticated && (
         <div className="fixed inset-0 flex items-center justify-center p-4">
