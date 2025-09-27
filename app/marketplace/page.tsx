@@ -1,16 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  Search,
-  ChevronDown,
-  LogOut,
-  X,
-  Upload,
-  ImageIcon,
-} from "lucide-react";
-import { usePrivy } from "@privy-io/react-auth";
+import { useState, useRef } from "react";
+import { Search, ChevronDown, X, Upload, ImageIcon } from "lucide-react";
+import { UserPill } from "@privy-io/react-auth/ui";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 import PromptCard from "@/components/ui/PromptCard";
+import { useRouter } from "next/navigation";
 
 interface PromptCardData {
   id: number;
@@ -102,10 +97,10 @@ const prompts: PromptCardData[] = [
 ];
 
 export default function Marketplace() {
-  const { ready, authenticated, logout, user } = usePrivy();
+  const { ready, authenticated } = usePrivy();
   const [activeTab, setActiveTab] = useState("Model");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     title: "",
@@ -114,27 +109,15 @@ export default function Marketplace() {
     thumbnail: null as File | null,
   });
   const [thumbnailPreview, setThumbnailPreview] = useState("");
+  const handleUploadClick = () => {
+    if (ready && authenticated) {
+      router.push("/upload");
+    }
+  };
 
-  const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const tabs = ["Model", "Filters", "Price Range", "Sort By", "License"];
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const formatWalletAddress = (address: string) => {
-    if (!address) return "";
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -214,7 +197,7 @@ export default function Marketplace() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-gray-700/15 to-transparent rounded-full blur-2xl"></div>
       </div>
 
-      <header className="relative z-20 border-b border-white/20 bg-black/30 backdrop-blur-sm">
+      <header className="relative border-b border-white/20 bg-black/30 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -233,92 +216,34 @@ export default function Marketplace() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setIsUploadModalOpen(true)}
-                className="px-6 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white font-medium hover:bg-white/20 transition-all duration-300 hover:scale-105"
-              >
-                Upload Prompt
-              </button>
-
-              {ready && authenticated && user && (
-                <div className="relative z-50" ref={menuRef}>
-                  <button
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="flex items-center space-x-3 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white hover:bg-white/20 transition-all duration-300"
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                      {user.email?.charAt(0).toUpperCase() ||
-                        user.phone?.charAt(-1) ||
-                        user.wallet?.address?.slice(2, 4).toUpperCase() ||
-                        "U"}
-                    </div>
-
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ${
-                        isMenuOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {isMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-64 bg-gray-900/98 backdrop-blur-xl border border-white/30 rounded-xl shadow-2xl overflow-hidden z-[9999]">
-                      {/* User Info Header */}
-                      <div className="px-4 py-4 border-b border-white/20 bg-gray-800/50">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium text-lg">
-                            {user.email?.charAt(0).toUpperCase() ||
-                              user.phone?.charAt(-1) ||
-                              user.wallet?.address?.slice(2, 4).toUpperCase() ||
-                              "U"}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-white text-sm font-medium truncate">
-                              {user.email?.split("@")[0] ||
-                                user.phone ||
-                                "User"}
-                            </p>
-                            {user.wallet?.address && (
-                              <p className="text-white/60 text-xs font-mono">
-                                {formatWalletAddress(user.wallet.address)}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Logout */}
-                      <div className="border-t border-white/20 py-2">
-                        <button
-                          onClick={() => {
-                            logout();
-                            setIsMenuOpen(false);
-                          }}
-                          className="w-full flex items-center space-x-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200"
-                        >
-                          <LogOut className="w-5 h-5" />
-                          <span className="text-sm font-medium">Logout</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {/* Upload Prompt Button - only show if authenticated */}
+              {ready && authenticated && (
+                <button
+                  onClick={() => handleUploadClick()}
+                  className="px-6 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full text-white font-medium hover:bg-white/20 transition-all duration-300 hover:scale-105"
+                >
+                  Upload Prompt
+                </button>
               )}
 
-              {/* Loading state */}
+              {/* Privy UserPill Component */}
+              <div className="[&>*]:!bg-white/10 [&>*]:!backdrop-blur-sm [&>*]:!border [&>*]:!border-white/30 [&>*]:!rounded-full [&>*]:!text-white [&>*]:hover:!bg-white/20 [&>*]:!transition-all [&>*]:!duration-300">
+                <UserPill
+                  action={{
+                    type: "login",
+                    options: {
+                      loginMethods: ["email", "wallet", "google"],
+                    },
+                  }}
+                  size={40}
+                />
+              </div>
+
+              {/* Loading state for when Privy is not ready */}
               {!ready && (
                 <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   <span className="text-white/60 text-sm">Loading...</span>
-                </div>
-              )}
-
-              {/* Not authenticated fallback */}
-              {ready && !authenticated && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-white/60 text-sm">
-                    Please login to access all features
-                  </span>
                 </div>
               )}
             </div>
@@ -326,38 +251,46 @@ export default function Marketplace() {
         </div>
       </header>
 
-      {/* Upload Modal */}
-      {isUploadModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Upload Modal - only show if authenticated */}
+      {isUploadModalOpen && ready && authenticated && (
+        <div className="fixed inset-0 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/90 backdrop-blur-md"
             onClick={resetModal}
           ></div>
 
           {/* Modal */}
-          <div className="relative w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="relative w-full max-w-2xl bg-gradient-to-br from-slate-900/95 via-gray-900/95 to-slate-800/95 backdrop-blur-2xl border border-slate-600/50 rounded-2xl shadow-2xl overflow-hidden">
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-8 py-6 border-b border-white/20">
+            <div className="relative flex items-center justify-between px-8 py-6 border-b border-slate-600/40 bg-gradient-to-r from-slate-800/60 to-gray-800/60">
               <div>
-                <h2 className="text-2xl font-bold text-white">Upload Prompt</h2>
-                <p className="text-white/60 text-sm mt-1">
+                <h2 className="text-2xl font-bold text-slate-100">
+                  Upload Prompt
+                </h2>
+                <p className="text-slate-300/80 text-sm mt-1">
                   Share your creative prompt with the community
                 </p>
               </div>
               <button
                 onClick={resetModal}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors duration-200"
+                className="p-2 hover:bg-slate-700/50 rounded-full transition-colors duration-200 group"
               >
-                <X className="w-6 h-6 text-white/60 hover:text-white" />
+                <X className="w-6 h-6 text-slate-400 group-hover:text-slate-200" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSubmitPrompt} className="p-8 space-y-6">
+            <form
+              onSubmit={handleSubmitPrompt}
+              className="relative p-8 space-y-6"
+            >
               {/* Title Input */}
               <div className="space-y-2">
-                <label className="text-white font-medium text-sm">
+                <label className="text-slate-200 font-medium text-sm">
                   Prompt Title
                 </label>
                 <input
@@ -370,14 +303,14 @@ export default function Marketplace() {
                       title: e.target.value,
                     }))
                   }
-                  className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/15 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-slate-800/60 backdrop-blur-sm border border-slate-600/60 rounded-xl text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-slate-800/80 transition-all duration-300"
                   required
                 />
               </div>
 
               {/* Description Input */}
               <div className="space-y-2">
-                <label className="text-white font-medium text-sm">
+                <label className="text-slate-200 font-medium text-sm">
                   Description
                 </label>
                 <textarea
@@ -390,14 +323,14 @@ export default function Marketplace() {
                     }))
                   }
                   rows={4}
-                  className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/15 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-slate-800/60 backdrop-blur-sm border border-slate-600/60 rounded-xl text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-slate-800/80 transition-all duration-300 resize-none"
                   required
                 />
               </div>
 
               {/* Thumbnail Upload */}
               <div className="space-y-2">
-                <label className="text-white font-medium text-sm">
+                <label className="text-slate-200 font-medium text-sm">
                   Thumbnail
                 </label>
                 <div className="relative">
@@ -414,13 +347,13 @@ export default function Marketplace() {
                       <img
                         src={thumbnailPreview}
                         alt="Thumbnail preview"
-                        className="w-full h-48 object-cover rounded-xl border border-white/30"
+                        className="w-full h-48 object-cover rounded-xl border border-slate-600/60"
                       />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white font-medium hover:bg-white/30 transition-all duration-200"
+                          className="px-4 py-2 bg-slate-700/80 backdrop-blur-sm border border-slate-600/60 rounded-lg text-slate-200 font-medium hover:bg-slate-600/80 hover:border-slate-500/60 transition-all duration-200"
                         >
                           Change Image
                         </button>
@@ -430,11 +363,11 @@ export default function Marketplace() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full h-48 bg-white/5 backdrop-blur-sm border-2 border-dashed border-white/30 rounded-xl flex flex-col items-center justify-center text-white/60 hover:text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 group"
+                      className="w-full h-48 bg-slate-800/40 backdrop-blur-sm border-2 border-dashed border-slate-600/50 rounded-xl flex flex-col items-center justify-center text-slate-400 hover:text-slate-300 hover:bg-slate-800/60 hover:border-slate-500/60 transition-all duration-300 group"
                     >
                       <ImageIcon className="w-12 h-12 mb-3 group-hover:scale-110 transition-transform duration-200" />
                       <p className="font-medium">Click to upload thumbnail</p>
-                      <p className="text-sm text-white/40 mt-1">
+                      <p className="text-sm text-slate-500 mt-1">
                         PNG, JPG, GIF up to 10MB
                       </p>
                     </button>
@@ -444,11 +377,11 @@ export default function Marketplace() {
 
               {/* Price Input */}
               <div className="space-y-2">
-                <label className="text-white font-medium text-sm">
+                <label className="text-slate-200 font-medium text-sm">
                   Price (USD)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 font-medium">
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 font-medium">
                     $
                   </span>
                   <input
@@ -463,7 +396,7 @@ export default function Marketplace() {
                         price: e.target.value,
                       }))
                     }
-                    className="w-full pl-8 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/15 transition-all duration-300"
+                    className="w-full pl-8 pr-4 py-3 bg-slate-800/60 backdrop-blur-sm border border-slate-600/60 rounded-xl text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-slate-800/80 transition-all duration-300"
                     required
                   />
                 </div>
@@ -474,13 +407,13 @@ export default function Marketplace() {
                 <button
                   type="button"
                   onClick={resetModal}
-                  className="px-6 py-3 text-white/80 hover:text-white font-medium transition-colors duration-200"
+                  className="px-6 py-3 text-slate-300 hover:text-slate-100 font-medium transition-colors duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                  className="px-8 py-3 bg-gradient-to-r from-blue-600/90 to-purple-600/90 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 flex items-center space-x-2 border border-blue-500/30"
                 >
                   <Upload className="w-5 h-5" />
                   <span>Upload Prompt</span>
@@ -491,7 +424,7 @@ export default function Marketplace() {
         </div>
       )}
 
-      <main className="relative z-10 container mx-auto px-6 py-6">
+      <main className="relative container mx-auto px-6 py-6">
         {/* Search Bar */}
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/60" />
