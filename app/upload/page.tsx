@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Upload, Image, ArrowLeft } from "lucide-react";
+import { X, Upload, Image, ArrowLeft, Brain, Sparkles } from "lucide-react";
 import { UserPill } from "@privy-io/react-auth/ui";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ export default function UploadPage() {
     thumbnail: null as File | null,
   });
   const [thumbnailPreview, setThumbnailPreview] = useState("");
+  const [showModelModal, setShowModelModal] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,11 +34,17 @@ export default function UploadPage() {
 
   const handleSubmitPrompt = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
+    // Show the model modal instead of immediate submission
+    setShowModelModal(true);
+  };
+
+  const handleConfirmUpload = () => {
+    // Handle actual form submission here
     console.log("Uploading prompt:", uploadForm);
     // Reset form and redirect back to marketplace
     setUploadForm({ title: "", description: "", price: "", thumbnail: null });
     setThumbnailPreview("");
+    setShowModelModal(false);
     router.push("/marketplace");
   };
 
@@ -271,29 +278,6 @@ export default function UploadPage() {
                 UPLOAD PROMPT
               </h1>
             </div>
-
-            <div className="flex items-center space-x-4">
-              {/* Privy UserPill Component */}
-              <div className="[&>*]:!bg-white/10 [&>*]:!backdrop-blur-sm [&>*]:!border [&>*]:!border-white/30 [&>*]:!rounded-full [&>*]:!text-white [&>*]:hover:!bg-white/20 [&>*]:!transition-all [&>*]:!duration-300">
-                <UserPill
-                  action={{
-                    type: "login",
-                    options: {
-                      loginMethods: ["email", "wallet", "google"],
-                    },
-                  }}
-                  size={40}
-                />
-              </div>
-
-              {/* Loading state for when Privy is not ready */}
-              {!ready && (
-                <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span className="text-white/60 text-sm">Loading...</span>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </header>
@@ -439,13 +423,13 @@ export default function UploadPage() {
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end space-x-6 pt-8">
-                <button
+                {/* <button
                   type="button"
                   onClick={handleBack}
                   className="px-8 py-4 text-slate-300 hover:text-slate-100 font-semibold text-lg transition-colors duration-200"
                 >
                   Cancel
-                </button>
+                </button> */}
                 <button
                   type="button"
                   onClick={handleSubmitPrompt}
@@ -459,6 +443,90 @@ export default function UploadPage() {
           </div>
         </div>
       </main>
+
+      {/* AI Model Modal */}
+      {showModelModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative bg-gradient-to-br from-slate-900/98 via-gray-900/98 to-slate-800/98 backdrop-blur-2xl border border-slate-600/50 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowModelModal(false)}
+              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors duration-200 z-10"
+            >
+              <X className="w-5 h-5 text-slate-400 hover:text-white" />
+            </button>
+
+            {/* Modal Content */}
+            <div className="relative p-8">
+              {/* Header with AI icon */}
+              <div className="text-center mb-8">
+                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Brain className="w-8 h-8 text-blue-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-100 mb-2">
+                  Current AI Model
+                </h3>
+                <p className="text-slate-400 text-sm">
+                  This prompt will be optimized for the selected model
+                </p>
+              </div>
+
+              {/* Model Card */}
+              <div className="bg-gradient-to-r from-slate-800/60 to-gray-800/60 border border-slate-600/40 rounded-xl p-6 mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-lg flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-semibold text-slate-100">
+                        Gemini 2.5 Flash
+                      </h4>
+                      <p className="text-slate-400 text-sm">Google's Latest</p>
+                    </div>
+                  </div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Speed:</span>
+                    <span className="text-slate-200">Ultra Fast</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Quality:</span>
+                    <span className="text-slate-200">High</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Best for:</span>
+                    <span className="text-slate-200">Creative Tasks</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowModelModal(false)}
+                  className="flex-1 px-6 py-3 text-slate-300 hover:text-slate-100 font-medium transition-colors duration-200 border border-slate-600/40 rounded-lg hover:bg-slate-800/40"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmUpload}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600/90 to-purple-600/90 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center space-x-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Confirm Upload</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
