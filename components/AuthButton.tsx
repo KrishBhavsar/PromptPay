@@ -25,9 +25,7 @@ const AuthButton = () => {
     // setShowLoadingModal(true);
     try {
       await login();
-      if (ready && authenticated) {
-        router.push("/marketplace");
-      }
+      router.push("/marketplace");
     } catch (error) {
       console.error("Login failed:", error);
       //   setShowLoadingModal(false);

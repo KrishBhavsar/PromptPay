@@ -270,18 +270,16 @@ const PromptExchange = () => {
 
       {/* Header */}
       <header className="relative z-10 flex justify-between items-center p-6">
-        {/* <div className="flex items-center">
-          <div className="w-44 h-44 mr-4 relative overflow-hidden">
-            <Image
-              src="/logo.png"
-              alt="logo"
-              fill
-              style={{ objectFit: "contain" }}
-              className="object-contain"
-            />
-          </div>
-        </div> */}
-        <nav className="hidden md:flex space-x-8">
+        <div className="w-44 h-34 absolute top-0 overflow-hidden ml-5">
+          <Image
+            src="/logo.png"
+            alt="logo"
+            fill
+            style={{ objectFit: "contain" }}
+            className="object-contain"
+          />
+        </div>
+        <nav className="hidden md:flex space-x-8 absolute top-10 right-8">
           <a
             href="#marketplace"
             className="text-white/80 hover:text-white transition-colors"
@@ -304,7 +302,7 @@ const PromptExchange = () => {
       </header>
 
       {/* Hero Section - Enhanced */}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-6">
+      <main className="relative z-10 mt-20 flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-6">
         {/* Main title with enhanced styling */}
         <div className="relative mb-8">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-purple-100 mb-4 tracking-tight leading-tight">
@@ -413,7 +411,8 @@ const PromptExchange = () => {
                     Instant Payouts
                   </h3>
                   <p className="text-white/70 leading-relaxed group-hover:text-white/90 transition-colors duration-300">
-                    Get paid immediately <br></br> after each sale, no waiting periods
+                    Get paid immediately <br></br> after each sale, no waiting
+                    periods
                   </p>
 
                   {/* Subtle bottom accent */}
