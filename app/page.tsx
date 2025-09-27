@@ -286,7 +286,7 @@ const PromptExchange = () => {
       {/* Main content */}
       <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-6">
         <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-8 tracking-tight">
-          PROMPT EXCHANGE
+          PROMPT PAY
         </h1>
 
         <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-4xl leading-relaxed">
