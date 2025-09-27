@@ -553,7 +553,7 @@ export default function UploadPage() {
                       <h4 className="text-xl font-semibold text-slate-100">
                         Gemini 2.5 Flash
                       </h4>
-                      <p className="text-slate-400 text-sm">Google's Latest</p>
+                      <p className="text-slate-400 text-sm">Nano Banana</p>
                     </div>
                   </div>
                   <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
@@ -570,7 +570,7 @@ export default function UploadPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Best for:</span>
-                    <span className="text-slate-200">Creative Tasks</span>
+                    <span className="text-slate-200">Image Generation</span>
                   </div>
                 </div>
               </div>
@@ -588,7 +588,7 @@ export default function UploadPage() {
                 </button>
                 <button
                   onClick={handleGenerateImage}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600/90 to-purple-600/90 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center space-x-2"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r border from-slate-800/60 to-gray-800/60 text-white border-slate-600/40 font-medium rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center space-x-2"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Generate Image</span>
