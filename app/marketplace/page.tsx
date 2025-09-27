@@ -203,7 +203,7 @@ export default function Marketplace() {
               )}
 
               {/* Privy UserPill Component */}
-              <div className="[&>*]:!bg-white/10 [&>*]:!backdrop-blur-sm [&>*]:!border [&>*]:!border-white/30 [&>*]:!rounded-full [&>*]:!text-white [&>*]:hover:!bg-white/20 [&>*]:!transition-all [&>*]:!duration-300">
+              <div className="[&>*]:!bg-white/10 [&>*]:!backdrop-blur-sm [&>*]:!border [&>*]:!border-white/30 [&>*]:!rounded-full [&>*]:!text-white [&>*]:hover:!bg-white/20 [&>*]:!transition-all [&>*]:!duration-300 mr-10">
                 <UserPill
                   action={{
                     type: "login",
