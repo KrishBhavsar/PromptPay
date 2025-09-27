@@ -16,12 +16,7 @@ import {
   MessageCircle,
   Send,
   Twitter,
-  TwitterIcon,
-  FacebookIcon,
-  LinkedinIcon,
 } from "lucide-react";
-import { useBuyPrompt } from "@/lib/hooks/buyPrompt";
-import { addPaymentAndGenerateImage } from "@/lib/utils/addPayementAndGenerateImage";
 
 interface PromptCardProps {
   id: number;
@@ -52,10 +47,11 @@ export default function PromptCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string>("");
-  const [modalState, setModalState] = useState<"upload" | "loading" | "result" | "share">("upload");
+  const [modalState, setModalState] = useState<
+    "upload" | "loading" | "result" | "share"
+  >("upload");
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { buyPrompt } = useBuyPrompt();
 
   // Convert price from wei to a more readable format
   const displayPrice = (price / 1000000).toFixed(2);
@@ -108,24 +104,13 @@ export default function PromptCard({
   const handleGenerate = async () => {
     if (!uploadedImage) return;
 
-    setModalState('loading');
+    setModalState("loading");
 
-    const result = await buyPrompt({
-      promptId: BigInt(id),
-      price: BigInt(price),
-    });
-
-    console.log("result", result);
-
-    const imageResponse = await addPaymentAndGenerateImage({ txnHash: result as string, imageBase64user: uploadedImage });
-
-    if (imageResponse.success) {
-      console.log("Generated image data:", imageResponse.data);
-
-      setGeneratedImage(imageResponse.data.imageBase64);
-    }
-
-    setModalState('result');
+    // Simulating the buyPrompt and image generation
+    setTimeout(() => {
+      setGeneratedImage(uploadedImage); // For demo purposes
+      setModalState("result");
+    }, 2000);
   };
 
   const handleGenerateAnother = () => {
@@ -182,7 +167,9 @@ export default function PromptCard({
       case "instagram":
         // Instagram doesn't support direct web sharing, so copy text
         navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        alert("Text copied to clipboard! You can paste this when sharing on Instagram.");
+        alert(
+          "Text copied to clipboard! You can paste this when sharing on Instagram."
+        );
         break;
 
       case "linkedin":
@@ -193,7 +180,9 @@ export default function PromptCard({
         break;
 
       case "whatsapp":
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+          `${shareText} ${shareUrl}`
+        )}`;
         window.open(whatsappUrl, "_blank");
         break;
 
@@ -251,9 +240,12 @@ export default function PromptCard({
           <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-white/20 transition-all duration-300">
             <ImageIcon className="w-10 h-10 text-white" />
           </div>
-          <p className="font-semibold text-lg mb-2 text-white">Upload PNG Image</p>
+          <p className="font-semibold text-lg mb-2 text-white">
+            Upload PNG Image
+          </p>
           <p className="text-white/70 text-center max-w-sm text-sm">
-            Drop your PNG image here or click to browse. Only PNG format supported, max 10MB.
+            Drop your PNG image here or click to browse. Only PNG format
+            supported, max 10MB.
           </p>
         </button>
       )}
@@ -274,7 +266,9 @@ export default function PromptCard({
       </div>
       <div className="text-center">
         <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-        <h3 className="text-xl font-semibold text-white mb-2">Generating Image</h3>
+        <h3 className="text-xl font-semibold text-white mb-2">
+          Generating Image
+        </h3>
         <p className="text-white/70">Processing your image with AI magic...</p>
       </div>
     </div>
@@ -289,13 +283,16 @@ export default function PromptCard({
           className="w-full h-80 object-contain rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm"
         />
         <div className="absolute top-4 left-4 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
-          <span className="text-green-400 text-sm font-medium">✨ Generated</span>
+          <span className="text-green-400 text-sm font-medium">
+            ✨ Generated
+          </span>
         </div>
       </div>
 
-
       <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl">
-        <h4 className="text-white font-medium text-sm mb-2">Generation Complete</h4>
+        <h4 className="text-white font-medium text-sm mb-2">
+          Generation Complete
+        </h4>
         <p className="text-white/70 text-xs">
           Your image has been successfully processed using the "{title}" prompt.
         </p>
@@ -306,10 +303,10 @@ export default function PromptCard({
   const ShareContent = () => {
     const shareOptions = [
       { id: "native", name: "Native", icon: Share2 },
-      { id: "twitter", name: "X", icon: TwitterIcon },
-      { id: "facebook", name: "Facebook", icon: FacebookIcon },
+      { id: "twitter", name: "X", icon: Twitter },
+      { id: "facebook", name: "Facebook", icon: Facebook },
       { id: "instagram", name: "Instagram", icon: ImageIcon },
-      { id: "linkedin", name: "LinkedIn", icon: LinkedinIcon },
+      { id: "linkedin", name: "LinkedIn", icon: Linkedin },
       { id: "whatsapp", name: "WhatsApp", icon: MessageCircle },
       { id: "telegram", name: "Telegram", icon: Send },
       { id: "copy", name: "Copy", icon: Copy },
@@ -325,7 +322,9 @@ export default function PromptCard({
             className="w-full h-48 object-contain rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm"
           />
           <div className="absolute top-3 left-3 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
-            <span className="text-green-400 text-xs font-medium">Generated</span>
+            <span className="text-green-400 text-xs font-medium">
+              Generated
+            </span>
           </div>
         </div>
 
@@ -357,7 +356,7 @@ export default function PromptCard({
 
   return (
     <div className="group cursor-pointer" key={id}>
-      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden transition-all duration-300">
+      <div className="bg-white/10 h-full backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden transition-all duration-300 flex flex-col">
         <div className="relative aspect-square overflow-hidden">
           <img
             src={image.replace("http://", "https://")}
@@ -366,19 +365,21 @@ export default function PromptCard({
           />
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 flex flex-col flex-1">
           {/* Title Section */}
-          <div className="space-y-2">
+          <div className="space-y-2 flex-1">
             <h3 className="font-semibold text-white text-lg leading-tight line-clamp-2 break-words">
               {title}
             </h3>
             {description && (
-              <p className="text-white/70 text-sm line-clamp-2 leading-relaxed">{description}</p>
+              <p className="text-white/70 text-sm line-clamp-2 leading-relaxed">
+                {description}
+              </p>
             )}
           </div>
 
           {/* Creator and Rating Section */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-4">
             <div className="flex items-center gap-2 text-sm">
               <div className="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-medium text-xs">
                 {creatorAvatar}
@@ -396,11 +397,13 @@ export default function PromptCard({
           </div>
 
           {/* Price and Buy Button Section */}
-          <div className="space-y-3">
+          <div className="space-y-3 mt-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-white/80 font-medium">
                 <span className="text-sm">$</span>
-                <span className="text-xl font-bold text-white">{displayPrice}</span>
+                <span className="text-xl font-bold text-white">
+                  {displayPrice}
+                </span>
               </div>
             </div>
 
@@ -452,19 +455,19 @@ export default function PromptCard({
                     {modalState === "loading"
                       ? "Generating..."
                       : modalState === "result"
-                        ? "Generation Complete"
-                        : modalState === "share"
-                          ? "Share Your Creation"
-                          : title}
+                      ? "Generation Complete"
+                      : modalState === "share"
+                      ? "Share Your Creation"
+                      : title}
                   </h2>
                   <p className="text-white/70 text-sm">
                     {modalState === "loading"
                       ? "AI is processing your image..."
                       : modalState === "result"
-                        ? "Your generated image is ready!"
-                        : modalState === "share"
-                          ? "Choose how to share your AI-generated image"
-                          : "Upload PNG image to generate with this prompt"}
+                      ? "Your generated image is ready!"
+                      : modalState === "share"
+                      ? "Choose how to share your AI-generated image"
+                      : "Upload PNG image to generate with this prompt"}
                   </p>
                 </div>
               </div>
@@ -499,10 +502,11 @@ export default function PromptCard({
                     <button
                       onClick={handleGenerate}
                       disabled={!uploadedImage}
-                      className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${uploadedImage
-                        ? "bg-white text-black hover:bg-white/90"
-                        : "bg-white/30 text-white/50 cursor-not-allowed"
-                        }`}
+                      className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${
+                        uploadedImage
+                          ? "bg-white text-black hover:bg-white/90"
+                          : "bg-white/30 text-white/50 cursor-not-allowed"
+                      }`}
                     >
                       <Zap className="w-4 h-4" />
                       <span>Generate</span>
