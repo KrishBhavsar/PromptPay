@@ -21,6 +21,7 @@ import {
   LinkedinIcon,
 } from "lucide-react";
 import { useBuyPrompt } from "@/lib/hooks/buyPrompt";
+import { addPaymentAndGenerateImage } from "@/lib/utils/addPayementAndGenerateImage";
 
 interface PromptCardProps {
   id: number;
@@ -108,12 +109,21 @@ export default function PromptCard({
     if (!uploadedImage) return;
 
     setModalState('loading');
+
     const result = await buyPrompt({
       promptId: BigInt(id),
       price: BigInt(price),
     });
 
     console.log("result", result);
+
+    const imageResponse = await addPaymentAndGenerateImage({ txnHash: result as string, imageBase64user: uploadedImage });
+
+    if (imageResponse.success) {
+      console.log("Generated image data:", imageResponse.data);
+
+      setGeneratedImage(imageResponse.data.imageBase64);
+    }
 
     setModalState('result');
   };
