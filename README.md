@@ -38,7 +38,7 @@ PromptPay connects prompt creators with users who want better AI results. Creato
 ## Quick Start
 
 ```bash
-git clone https://github.com/yourusername/promptpay.git
+git clone https://github.com/KrishBhavsar/PromptPay.git
 cd promptpay
 npm install
 cp .env.example .env
@@ -48,10 +48,10 @@ npm run dev
 ## Environment Variables
 
 ```
-FLOW_NETWORK=testnet
-POLYGON_RPC_URL=your_polygon_url
-PYUSD_CONTRACT_ADDRESS=your_contract_address
-FILECOIN_API_KEY=your_filecoin_key
+NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+NEXT_PUBLIC_CLOUDINARY_API_KEY=your_cloudinary_api_key
+NEXT_PUBLIC_CLOUDINARY_API_SECRET==your_cloudinary_api_secret
 ```
 
 ## How It Works
@@ -84,9 +84,7 @@ FILECOIN_API_KEY=your_filecoin_key
 
 ## Links
 
-- Website: promptpay.app
-- Docs: docs.promptpay.app
-- Discord: discord.gg/promptpay
+- Website: https://prompt-payy.vercel.app
 
 ## License
 
