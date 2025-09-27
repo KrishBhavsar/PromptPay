@@ -76,8 +76,8 @@ export default function UploadPage() {
     const hash = await encryptAndStorePrompt(uploadForm.description);
     console.log("Encrypted and stored prompt with hash:", hash);
 
-    // const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
-    // console.log("response from cloudinary upload", response);
+    const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
+    console.log("response from cloudinary upload", response);
 
     const createResponse = await createPrompt({
       title: uploadForm.title,
@@ -85,21 +85,18 @@ export default function UploadPage() {
       model: "gemini-2.5",
       price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
       filecoinHash: hash.hash,
-      image: 'http://res.cloudinary.com/djednygbs/image/upload/v1758971560/nnors8sxvuccyyug8dq3.png'
+      image: response.url
     });
 
     console.log("createResponse from createPrompt", createResponse, hash);
 
-
-
-
     // Reset form and redirect back to marketplace
-    // setUploadForm({ title: "", description: "", price: "", thumbnail: null });
-    // setThumbnailPreview("");
-    // setGeneratedImage("");
-    // setShowImagePreviewModal(false);
-    // setShowModelModal(false);
-    // router.push("/marketplace");
+    setUploadForm({ title: "", description: "", price: "", thumbnail: null });
+    setThumbnailPreview("");
+    setGeneratedImage("");
+    setShowImagePreviewModal(false);
+    setShowModelModal(false);
+    router.push("/marketplace");
   };
 
   const handleBack = () => {
