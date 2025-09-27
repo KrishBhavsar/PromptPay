@@ -19,7 +19,6 @@ interface ApiError {
 // Input parameters interface
 interface PaymentImageParams {
     txnHash: string;
-    hash: string;
     imageBase64user: string;
 }
 
@@ -37,7 +36,7 @@ type PaymentImageResult =
 export async function addPaymentAndGenerateImage(
     params: PaymentImageParams,
 ): Promise<PaymentImageResult> {
-    const { txnHash, hash, imageBase64user } = params;
+    const { txnHash, imageBase64user } = params;
 
     try {
         // Step 1: Add payment details
@@ -79,7 +78,7 @@ export async function addPaymentAndGenerateImage(
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                hash,
+                hash: txnHash,
                 imageBase64user,
                 txnHash,
             }),
