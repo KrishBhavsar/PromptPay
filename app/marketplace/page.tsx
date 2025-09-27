@@ -469,6 +469,8 @@ export default function Marketplace() {
                 image={prompt.image}
                 rating={prompt.rating}
                 isPrivate={prompt.isPrivate}
+                // Implement Payment Buy stuff here
+                // onBuyRun={}
               />
             ))}
           </div>
