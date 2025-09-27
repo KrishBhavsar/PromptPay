@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PromptPay
 
-## Getting Started
+The first blockchain marketplace for AI prompts. Buy and sell high-quality prompts with instant payments.
 
-First, run the development server:
+## What is PromptPay?
+
+PromptPay connects prompt creators with users who want better AI results. Creators upload their best prompts and earn money when people buy them. Users get access to proven prompts that actually work.
+
+**The Problem:** Great prompt engineers share their work for free while users spend hours trying to recreate viral AI outputs.
+
+**Our Solution:** A marketplace where both sides win.
+
+## Architecture
+
+![PromptPay Architecture](/arch.png)
+
+## Tech Stack
+
+- **Blockchain:** Flow (primary) + Polygon
+- **Payments:** PayPal USD (PYUSD)
+- **Storage:** Filecoin + IPFS
+- **Smart Contracts:** Solidity
+
+## Features
+
+**For Creators:**
+- Upload prompts with examples
+- Set your own prices
+- Get paid instantly in PYUSD
+- Track your sales
+
+**For Buyers:**
+- Browse by AI model or category
+- See real examples before buying
+- Pay with stable PYUSD
+- Get prompts immediately
+
+## Quick Start
 
 ```bash
+git clone https://github.com/yourusername/promptpay.git
+cd promptpay
+npm install
+cp .env.example .env
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+FLOW_NETWORK=testnet
+POLYGON_RPC_URL=your_polygon_url
+PYUSD_CONTRACT_ADDRESS=your_contract_address
+FILECOIN_API_KEY=your_filecoin_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How It Works
 
-## Learn More
+1. **Creators** upload prompts with sample outputs and set prices
+2. **Prompts** are encrypted and stored on Filecoin
+3. **Buyers** browse, preview, and purchase with PYUSD
+4. **Smart contracts** handle payments and unlock prompts instantly
 
-To learn more about Next.js, take a look at the following resources:
+## Why PromptPay?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Low fees:** 2.5% vs 30% on app stores
+- **Instant payments:** No waiting periods
+- **Global access:** Works anywhere
+- **Multi-blockchain:** Flow + Polygon support
+- **Stable payments:** PYUSD eliminates volatility
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Business Model
 
-## Deploy on Vercel
+- 2.5% fee per transaction
+- Premium creator tools
+- Enterprise solutions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork the repo
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## Links
+
+- Website: promptpay.app
+- Docs: docs.promptpay.app
+- Discord: discord.gg/promptpay
+
+## License
+
+MIT License
