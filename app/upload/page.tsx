@@ -5,6 +5,7 @@ import { X, Upload, Image, ArrowLeft, Brain, Sparkles, Loader2 } from "lucide-re
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { generatePromptPreview } from "../../lib/utils/generatePromptImage";
+import { encryptAndStorePrompt } from "@/lib/utils/encryptAndStorePrompt";
 
 export default function UploadPage() {
   const { ready, authenticated } = usePrivy();
@@ -64,18 +65,21 @@ export default function UploadPage() {
     }
   };
 
-  const handleConfirmUpload = () => {
+  const handleConfirmUpload = async () => {
     // Handle actual form submission here
     console.log("Uploading prompt:", uploadForm);
     console.log("Generated image:", generatedImage);
 
+    const hash = await encryptAndStorePrompt(uploadForm.description);
+    console.log("Encrypted and stored prompt with hash:", hash);
+
     // Reset form and redirect back to marketplace
-    setUploadForm({ title: "", description: "", price: "", thumbnail: null });
-    setThumbnailPreview("");
-    setGeneratedImage("");
-    setShowImagePreviewModal(false);
-    setShowModelModal(false);
-    router.push("/marketplace");
+    // setUploadForm({ title: "", description: "", price: "", thumbnail: null });
+    // setThumbnailPreview("");
+    // setGeneratedImage("");
+    // setShowImagePreviewModal(false);
+    // setShowModelModal(false);
+    // router.push("/marketplace");
   };
 
   const handleBack = () => {
@@ -384,7 +388,7 @@ export default function UploadPage() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                   accept="image/png"
+                    accept="image/png"
                     onChange={handleThumbnailChange}
                     className="hidden"
                   />
