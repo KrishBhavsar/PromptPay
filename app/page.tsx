@@ -521,9 +521,9 @@ const PromptExchange = () => {
                       Instant Marketplace
                     </h3>
                     <p className="text-white/70 leading-relaxed group-hover:text-white/90 transition-colors duration-300">
-                      Browse high-quality prompts across categories. From
-                      creative writing to code generation, find exactly what you
-                      need in seconds.
+                      Browse high-quality image prompts across categories. From
+                      stunning art to unique designs, find exactly what you need
+                      in seconds
                     </p>
                   </div>
 
@@ -562,7 +562,7 @@ const PromptExchange = () => {
                     <p className="text-white/70 leading-relaxed group-hover:text-white/90 transition-colors duration-300">
                       Turn your creativity into income. Upload your best prompts
                       and start earning from every purchase. No complicated
-                      setup, just pure monetization.
+                      setup, just pure monetization
                     </p>
                   </div>
 
@@ -796,7 +796,8 @@ const PromptExchange = () => {
                             All Categories
                           </h4>
                           <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300">
-                            From creative writing to technical documentation
+                            From stunning artwork to cutting-edge image
+                            generation
                           </p>
                         </div>
                       </div>
