@@ -905,3 +905,6 @@ export const contractABI = [
         "type": "function"
     }
 ]
+
+
+export const BACKEND_URL = "https://d3c2422275d9.ngrok-free.app";
