@@ -1,5 +1,5 @@
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract, useAccount } from 'wagmi'
-import { contractABI, contractAddress, USDC_ABI, USDC_ADDRESS } from '../constants' // Adjust import path as needed
+import { contractABI, contractAddress, USDC_ABI, PAYPAL_USDC_ADDRESS } from '../constants' // Adjust import path as needed
 import { useState } from 'react'
 import { waitForTransactionReceipt } from 'wagmi/actions'
 import { wagmiConfig } from '../configs/wagmiConfig'
@@ -66,7 +66,7 @@ export function useBuyPrompt(): UseBuyPromptResult {
         isLoading: isCheckingAllowance,
         refetch: refetchAllowance
     } = useReadContract({
-        address: USDC_ADDRESS,
+        address: PAYPAL_USDC_ADDRESS,
         abi: USDC_ABI,
         functionName: 'allowance',
         args: address ? [address, contractAddress] : undefined,
@@ -81,7 +81,7 @@ export function useBuyPrompt(): UseBuyPromptResult {
 
     const approveToken = async (amount: bigint) => {
         const result = await writeApproval({
-            address: USDC_ADDRESS,
+            address: PAYPAL_USDC_ADDRESS,
             abi: USDC_ABI,
             functionName: 'approve',
             args: [contractAddress, amount],
