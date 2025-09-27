@@ -1,6 +1,6 @@
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { contractABI, contractAddress } from '../constants' // Adjust import path as needed
-import { polygonAmoy } from 'wagmi/chains'
+import { sepolia } from 'wagmi/chains'
 import { waitForTransactionReceipt } from 'wagmi/actions'
 import { wagmiConfig } from '../configs/wagmiConfig'
 
@@ -39,7 +39,7 @@ export function useCreatePrompt(): UseCreatePromptResult {
     } = useWaitForTransactionReceipt({
         hash,
     })
-    
+
 
     const createPrompt = async ({
         title,
@@ -49,18 +49,18 @@ export function useCreatePrompt(): UseCreatePromptResult {
         filecoinHash,
         image
     }: CreatePromptParams) => {
-        const hash=await writeContract({
+        const hash = await writeContract({
             address: contractAddress,
             abi: contractABI,
             functionName: 'createPrompt',
             args: [title, description, model, price, filecoinHash, image],
-            chainId: polygonAmoy.id,
+            chainId: sepolia.id,
         })
-       const receipt= await waitForTransactionReceipt(wagmiConfig,{
-        hash:hash,
-        confirmations:1
-       });
-       return receipt.transactionHash
+        const receipt = await waitForTransactionReceipt(wagmiConfig, {
+            hash: hash,
+            confirmations: 1
+        });
+        return receipt.transactionHash
     }
 
     return {

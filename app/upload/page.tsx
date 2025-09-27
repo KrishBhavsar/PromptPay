@@ -99,7 +99,7 @@ export default function UploadPage() {
 
       const createResponse = await createPrompt({
         title: uploadForm.title,
-        description: uploadForm.description,
+        description: '',
         model: "gemini-2.5",
         price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
         filecoinHash: hash.hash,
