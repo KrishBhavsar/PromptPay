@@ -6,7 +6,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { generatePromptPreview } from "../../lib/utils/generatePromptImage";
 import { encryptAndStorePrompt } from "@/lib/utils/encryptAndStorePrompt";
-import { uploadBase64ToCloudinary, uploadBase64ToCloudinaryUnsigned } from "@/lib/utils/uploadBase64ToCloudinary";
+import { uploadBase64ToCloudinaryUnsigned } from "@/lib/utils/uploadBase64ToCloudinary";
 import { useCreatePrompt } from "@/lib/hooks/useCreatePrompt";
 
 export default function UploadPage() {

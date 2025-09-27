@@ -9,6 +9,7 @@ interface Prompt {
     model: string
     price: bigint
     filecoinHash: string
+    image: string
     isActive: boolean
     createdAt: bigint
     totalPurchases: bigint
