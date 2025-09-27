@@ -1,4 +1,4 @@
-export const contractAddress = "0xE5D0E6B921746E4a6489B6E8C4B661D32A042ECd";
+export const contractAddress = "0x3e40f0De02B9BEAB397a4bB431821147fFB12949";
 export const contractABI = [
     {
         "inputs": [
@@ -151,6 +151,12 @@ export const contractABI = [
                 "indexed": false,
                 "internalType": "string",
                 "name": "filecoinHash",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "image",
                 "type": "string"
             }
         ],
@@ -306,6 +312,11 @@ export const contractABI = [
             {
                 "internalType": "string",
                 "name": "_filecoinHash",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_image",
                 "type": "string"
             }
         ],
@@ -473,6 +484,11 @@ export const contractABI = [
                         "type": "string"
                     },
                     {
+                        "internalType": "string",
+                        "name": "image",
+                        "type": "string"
+                    },
+                    {
                         "internalType": "bool",
                         "name": "isActive",
                         "type": "bool"
@@ -554,6 +570,11 @@ export const contractABI = [
                     {
                         "internalType": "string",
                         "name": "filecoinHash",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "image",
                         "type": "string"
                     },
                     {
@@ -776,6 +797,11 @@ export const contractABI = [
                 "type": "string"
             },
             {
+                "internalType": "string",
+                "name": "image",
+                "type": "string"
+            },
+            {
                 "internalType": "bool",
                 "name": "isActive",
                 "type": "bool"
@@ -907,4 +933,4 @@ export const contractABI = [
 ]
 
 
-export const BACKEND_URL = "https://d3c2422275d9.ngrok-free.app";
+export const BACKEND_URL = "https://726cc7d5ab46.ngrok-free.app";

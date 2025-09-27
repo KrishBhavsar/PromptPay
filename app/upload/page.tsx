@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { generatePromptPreview } from "../../lib/utils/generatePromptImage";
 import { encryptAndStorePrompt } from "@/lib/utils/encryptAndStorePrompt";
 import { uploadBase64ToCloudinary, uploadBase64ToCloudinaryUnsigned } from "@/lib/utils/uploadBase64ToCloudinary";
+import { useCreatePrompt } from "@/lib/hooks/useCreatePrompt";
 
 export default function UploadPage() {
   const { ready, authenticated } = usePrivy();
@@ -25,6 +26,7 @@ export default function UploadPage() {
   const [generationError, setGenerationError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { createPrompt, hash, } = useCreatePrompt();
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,8 +76,21 @@ export default function UploadPage() {
     const hash = await encryptAndStorePrompt(uploadForm.description);
     console.log("Encrypted and stored prompt with hash:", hash);
 
-    const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
-    console.log("response from cloudinary upload", response);
+    // const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
+    // console.log("response from cloudinary upload", response);
+
+    const createResponse = await createPrompt({
+      title: uploadForm.title,
+      description: uploadForm.description,
+      model: "gemini-2.5",
+      price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
+      filecoinHash: hash.hash,
+      image: 'http://res.cloudinary.com/djednygbs/image/upload/v1758971560/nnors8sxvuccyyug8dq3.png'
+    });
+
+    console.log("createResponse from createPrompt", createResponse, hash);
+
+
 
 
     // Reset form and redirect back to marketplace

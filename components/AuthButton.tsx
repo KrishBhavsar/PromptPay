@@ -24,7 +24,7 @@ const AuthButton = () => {
 
     // setShowLoadingModal(true);
     try {
-      await login();
+      await login({});
       if (ready && authenticated) {
         router.push("/marketplace");
       }

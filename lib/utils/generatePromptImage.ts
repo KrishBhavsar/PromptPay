@@ -45,23 +45,31 @@ export async function generatePromptPreview(
         // Convert image file to base64
         const imageBase64Creator = await fileToBase64(image)
 
-        // Make the fetch request to the Next.js API route
-        const response = await fetch('/api/generate-prompt-preview', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                prompt,
-                imageBase64Creator,
-            }),
-        })
+        // // Make the fetch request to the Next.js API route
+        // const response = await fetch('/api/generate-prompt-preview', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         prompt,
+        //         imageBase64Creator,
+        //     }),
+        // })
 
-        const data = await response.json()
+        // const data = await response.json()
 
-        if (!response.ok) {
-            const errorData = data as GeneratePromptPreviewError
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        // if (!response.ok) {
+        //     const errorData = data as GeneratePromptPreviewError
+        //     throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        // }
+
+        //Temp: return mock data until backend is fixed
+        const data = {
+            success: true,
+            imageBase64: imageBase64Creator,
+            text: prompt,
+            downloadUrl: "https://res.cloudinary.com/dq2t1jzqv/image/upload/v1700882928/sample.jpg"
         }
 
         return data as GeneratePromptPreviewResponse
