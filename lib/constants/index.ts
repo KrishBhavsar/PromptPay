@@ -930,7 +930,7 @@ export const contractABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;
 
 export const BACKEND_URL = "https://726cc7d5ab46.ngrok-free.app";
 

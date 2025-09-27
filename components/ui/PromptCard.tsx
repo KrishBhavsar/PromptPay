@@ -20,6 +20,7 @@ import {
   FacebookIcon,
   LinkedinIcon,
 } from "lucide-react";
+import { useBuyPrompt } from "@/lib/hooks/buyPrompt";
 
 interface PromptCardProps {
   id: number;
@@ -53,6 +54,7 @@ export default function PromptCard({
   const [modalState, setModalState] = useState<"upload" | "loading" | "result" | "share">("upload");
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { buyPrompt } = useBuyPrompt();
 
   // Convert price from wei to a more readable format
   const displayPrice = (price / 1000000).toFixed(2);
@@ -105,16 +107,15 @@ export default function PromptCard({
   const handleGenerate = async () => {
     if (!uploadedImage) return;
 
-    setModalState("loading");
+    setModalState('loading');
+    const result = await buyPrompt({
+      promptId: BigInt(id),
+      price: BigInt(price),
+    });
 
-    // Simulate API call delay
-    setTimeout(() => {
-      // Use a placeholder image for demo (in real app, this would be the API response)
-      setGeneratedImage(
-        "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=800&fit=crop"
-      );
-      setModalState("result");
-    }, 3000);
+    console.log("result", result);
+
+    setModalState('result');
   };
 
   const handleGenerateAnother = () => {
@@ -282,6 +283,7 @@ export default function PromptCard({
         </div>
       </div>
 
+
       <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl">
         <h4 className="text-white font-medium text-sm mb-2">Generation Complete</h4>
         <p className="text-white/70 text-xs">
@@ -440,19 +442,19 @@ export default function PromptCard({
                     {modalState === "loading"
                       ? "Generating..."
                       : modalState === "result"
-                      ? "Generation Complete"
-                      : modalState === "share"
-                      ? "Share Your Creation"
-                      : title}
+                        ? "Generation Complete"
+                        : modalState === "share"
+                          ? "Share Your Creation"
+                          : title}
                   </h2>
                   <p className="text-white/70 text-sm">
                     {modalState === "loading"
                       ? "AI is processing your image..."
                       : modalState === "result"
-                      ? "Your generated image is ready!"
-                      : modalState === "share"
-                      ? "Choose how to share your AI-generated image"
-                      : "Upload PNG image to generate with this prompt"}
+                        ? "Your generated image is ready!"
+                        : modalState === "share"
+                          ? "Choose how to share your AI-generated image"
+                          : "Upload PNG image to generate with this prompt"}
                   </p>
                 </div>
               </div>
@@ -487,11 +489,10 @@ export default function PromptCard({
                     <button
                       onClick={handleGenerate}
                       disabled={!uploadedImage}
-                      className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${
-                        uploadedImage
-                          ? "bg-white text-black hover:bg-white/90"
-                          : "bg-white/30 text-white/50 cursor-not-allowed"
-                      }`}
+                      className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${uploadedImage
+                        ? "bg-white text-black hover:bg-white/90"
+                        : "bg-white/30 text-white/50 cursor-not-allowed"
+                        }`}
                     >
                       <Zap className="w-4 h-4" />
                       <span>Generate</span>

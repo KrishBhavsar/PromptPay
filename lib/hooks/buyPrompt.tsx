@@ -1,6 +1,9 @@
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract, useAccount } from 'wagmi'
 import { contractABI, contractAddress, USDC_ABI, USDC_ADDRESS } from '../constants' // Adjust import path as needed
 import { useState } from 'react'
+import { waitForTransactionReceipt } from 'wagmi/actions'
+import { wagmiConfig } from '../configs/wagmiConfig'
+import { polygonAmoy } from 'wagmi/chains'
 
 interface BuyPromptParams {
     promptId: bigint
@@ -8,7 +11,7 @@ interface BuyPromptParams {
 }
 
 interface UseBuyPromptResult {
-    buyPrompt: (params: BuyPromptParams) => Promise<void>
+    buyPrompt: (params: BuyPromptParams) => Promise<string | undefined>
     isLoading: boolean
     isSuccess: boolean
     isError: boolean
@@ -25,7 +28,7 @@ export function useBuyPrompt(): UseBuyPromptResult {
     const [currentPromptPrice, setCurrentPromptPrice] = useState<bigint>(BigInt(0))
 
     const {
-        writeContract,
+        writeContractAsync: writeContract,
         data: hash,
         error,
         isError,
@@ -33,8 +36,9 @@ export function useBuyPrompt(): UseBuyPromptResult {
         reset: resetWrite
     } = useWriteContract()
 
+
     const {
-        writeContract: writeApproval,
+        writeContractAsync: writeApproval,
         data: approvalHash,
         error: approvalError,
         isError: isApprovalError,
@@ -76,21 +80,25 @@ export function useBuyPrompt(): UseBuyPromptResult {
         (currentAllowance as bigint) < currentPromptPrice
 
     const approveToken = async (amount: bigint) => {
-        writeApproval({
+        const result = await writeApproval({
             address: USDC_ADDRESS,
             abi: USDC_ABI,
             functionName: 'approve',
-            args: [contractAddress, amount]
+            args: [contractAddress, amount],
+            chainId: polygonAmoy.id,
         })
+        return result
     }
 
     const executePurchase = async (promptId: bigint) => {
-        writeContract({
+        const result = await writeContract({
             address: contractAddress,
             abi: contractABI,
             functionName: 'buyPrompt',
-            args: [promptId]
-        })
+            args: [promptId],
+            chainId: polygonAmoy.id,
+        });
+        return result;
     }
 
     const buyPrompt = async ({ promptId, price }: BuyPromptParams) => {
@@ -105,12 +113,31 @@ export function useBuyPrompt(): UseBuyPromptResult {
             const allowance = currentAllowance as bigint
             if (allowance < price) {
                 // Need approval first
-                await approveToken(price)
+                const hash = await approveToken(price);
+                const receipt = await waitForTransactionReceipt(wagmiConfig, {
+                    hash: hash as `0x${string}`,
+                    confirmations: 1
+                });
 
-                await executePurchase(promptId)
+                console.log("Approval receipt:", receipt.transactionHash);
+
+                const buyHash = await executePurchase(promptId);
+                await waitForTransactionReceipt(wagmiConfig, {
+                    hash: buyHash as `0x${string}`,
+                    confirmations: 1
+                });
+
+                return buyHash;
+
             } else {
                 // Already have sufficient allowance, proceed with purchase
-                await executePurchase(promptId)
+                const buyHash = await executePurchase(promptId);
+                await waitForTransactionReceipt(wagmiConfig, {
+                    hash: buyHash as `0x${string}`,
+                    confirmations: 1
+                });
+
+                return buyHash;
             }
         } catch (err) {
             console.error('Error in buyPrompt:', err)
