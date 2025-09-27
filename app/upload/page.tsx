@@ -30,6 +30,7 @@ export default function UploadPage() {
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
   const [generatedImage, setGeneratedImage] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [generationError, setGenerationError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,34 +84,43 @@ export default function UploadPage() {
   };
 
   const handleConfirmUpload = async () => {
-    // Handle actual form submission here
-    console.log("Uploading prompt:", uploadForm);
-    console.log("Generated image:", generatedImage);
+    setIsUploading(true);
 
-    const hash = await encryptAndStorePrompt(uploadForm.description);
-    console.log("Encrypted and stored prompt with hash:", hash);
+    try {
+      // Handle actual form submission here
+      console.log("Uploading prompt:", uploadForm);
+      console.log("Generated image:", generatedImage);
 
-    const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
-    console.log("response from cloudinary upload", response);
+      const hash = await encryptAndStorePrompt(uploadForm.description);
+      console.log("Encrypted and stored prompt with hash:", hash);
 
-    const createResponse = await createPrompt({
-      title: uploadForm.title,
-      description: uploadForm.description,
-      model: "gemini-2.5",
-      price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
-      filecoinHash: hash.hash,
-      image: response.url,
-    });
+      const response = await uploadBase64ToCloudinaryUnsigned(generatedImage);
+      console.log("response from cloudinary upload", response);
 
-    console.log("createResponse from createPrompt", createResponse, hash);
+      const createResponse = await createPrompt({
+        title: uploadForm.title,
+        description: uploadForm.description,
+        model: "gemini-2.5",
+        price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
+        filecoinHash: hash.hash,
+        image: response.url,
+      });
 
-    // Reset form and redirect back to marketplace
-    setUploadForm({ title: "", description: "", price: "", thumbnail: null });
-    setThumbnailPreview("");
-    setGeneratedImage("");
-    setShowImagePreviewModal(false);
-    setShowModelModal(false);
-    router.push("/marketplace");
+      console.log("createResponse from createPrompt", createResponse, hash);
+
+      // Reset form and redirect back to marketplace
+      setUploadForm({ title: "", description: "", price: "", thumbnail: null });
+      setThumbnailPreview("");
+      setGeneratedImage("");
+      setShowImagePreviewModal(false);
+      setShowModelModal(false);
+      router.push("/marketplace");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      // Handle error here if needed
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleBack = () => {
@@ -452,7 +462,7 @@ export default function UploadPage() {
                         Click to upload thumbnail
                       </p>
                       <p className="text-lg text-slate-500 mt-2">
-                        PNG, JPG, GIF up to 10MB
+                        PNG Only 10MB
                       </p>
                     </button>
                   )}
@@ -588,10 +598,17 @@ export default function UploadPage() {
                 </button>
                 <button
                   onClick={handleGenerateImage}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r border from-slate-800/60 to-gray-800/60 text-white border-slate-600/40 font-medium rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center space-x-2"
+                  disabled={isGenerating}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r border from-slate-800/60 to-gray-800/60 text-white border-slate-600/40 font-medium rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Generate Image</span>
+                  {isGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  <span>
+                    {isGenerating ? "Generating..." : "Generate Image"}
+                  </span>
                 </button>
               </div>
             </div>
@@ -701,10 +718,15 @@ export default function UploadPage() {
                 </button>
                 <button
                   onClick={handleConfirmUpload}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-600/90 to-blue-600/90 hover:from-emerald-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center space-x-2"
+                  disabled={isUploading}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-600/90 to-blue-600/90 hover:from-emerald-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
                 >
-                  <Upload className="w-4 h-4" />
-                  <span>Confirm Upload</span>
+                  {isUploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                  <span>{isUploading ? "Uploading..." : "Confirm Upload"}</span>
                 </button>
               </div>
             </div>
