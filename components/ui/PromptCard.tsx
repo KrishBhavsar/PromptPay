@@ -48,14 +48,14 @@
 //   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     const file = e.target.files?.[0];
 //     setUploadError("");
-    
+
 //     if (file) {
 //       // Check if file is PNG
 //       if (file.type !== 'image/png') {
 //         setUploadError("Please select a PNG image file only.");
 //         return;
 //       }
-      
+
 //       // Check file size (10MB limit)
 //       if (file.size > 10 * 1024 * 1024) {
 //         setUploadError("File size must be less than 10MB.");
@@ -90,7 +90,7 @@
 //         onChange={handleFileChange}
 //         className="hidden"
 //       />
-      
+
 //       {uploadedImage ? (
 //         <div className="relative group">
 //           <img
@@ -124,7 +124,7 @@
 //           </p>
 //         </button>
 //       )}
-      
+
 //       {uploadError && (
 //         <div className="flex items-center space-x-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
 //           <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
@@ -327,14 +327,14 @@
 //   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     const file = e.target.files?.[0];
 //     setUploadError("");
-    
+
 //     if (file) {
 //       // Check if file is PNG
 //       if (file.type !== 'image/png') {
 //         setUploadError("Please select a PNG image file only.");
 //         return;
 //       }
-      
+
 //       // Check file size (10MB limit)
 //       if (file.size > 10 * 1024 * 1024) {
 //         setUploadError("File size must be less than 10MB.");
@@ -355,9 +355,9 @@
 
 //   const handleGenerate = async () => {
 //     if (!uploadedImage) return;
-    
+
 //     setModalState('loading');
-    
+
 //     // Simulate API call delay
 //     setTimeout(() => {
 //       // Use a placeholder image for demo (in real app, this would be the API response)
@@ -388,7 +388,7 @@
 //         onChange={handleFileChange}
 //         className="hidden"
 //       />
-      
+
 //       {uploadedImage ? (
 //         <div className="relative group">
 //           <img
@@ -422,7 +422,7 @@
 //           </p>
 //         </button>
 //       )}
-      
+
 //       {uploadError && (
 //         <div className="flex items-center space-x-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
 //           <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
@@ -457,7 +457,7 @@
 //           <span className="text-green-400 text-sm font-medium">✨ Generated</span>
 //         </div>
 //       </div>
-      
+
 //       <div className="p-4 bg-slate-800/40 backdrop-blur-sm border border-slate-600/40 rounded-xl">
 //         <h4 className="text-slate-200 font-medium text-sm mb-2">Generation Complete</h4>
 //         <p className="text-slate-400 text-xs">
@@ -671,6 +671,7 @@
 
 import { useRef, useState } from "react";
 import { Star, Eye, Lock, X, Upload, Zap, ImageIcon, AlertCircle, Share2, RotateCcw } from "lucide-react";
+import { useBuyPrompt } from "@/lib/hooks/buyPrompt";
 
 interface PromptCardProps {
   id: number;
@@ -704,6 +705,7 @@ export default function PromptCard({
   const [modalState, setModalState] = useState<'upload' | 'loading' | 'result'>('upload');
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { buyPrompt } = useBuyPrompt();
 
   // Convert price from wei to a more readable format
   const displayPrice = (price / 1000000).toFixed(2);
@@ -723,14 +725,14 @@ export default function PromptCard({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setUploadError("");
-    
+
     if (file) {
       // Check if file is PNG
       if (file.type !== 'image/png') {
         setUploadError("Please select a PNG image file only.");
         return;
       }
-      
+
       // Check file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
         setUploadError("File size must be less than 10MB.");
@@ -751,15 +753,16 @@ export default function PromptCard({
 
   const handleGenerate = async () => {
     if (!uploadedImage) return;
-    
+
     setModalState('loading');
+    const result = await buyPrompt({
+      promptId: BigInt(id),
+      price: BigInt(price),
+    });
+
+    console.log("result", result);
     
-    // Simulate API call delay
-    setTimeout(() => {
-      // Use a placeholder image for demo (in real app, this would be the API response)
-      setGeneratedImage("https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=800&fit=crop");
-      setModalState('result');
-    }, 3000);
+    setModalState('result');
   };
 
   const handleGenerateAnother = () => {
@@ -784,7 +787,7 @@ export default function PromptCard({
         onChange={handleFileChange}
         className="hidden"
       />
-      
+
       {uploadedImage ? (
         <div className="relative group">
           <img
@@ -818,7 +821,7 @@ export default function PromptCard({
           </p>
         </button>
       )}
-      
+
       {uploadError && (
         <div className="flex items-center space-x-2 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
           <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
@@ -853,7 +856,7 @@ export default function PromptCard({
           <span className="text-green-400 text-sm font-medium">✨ Generated</span>
         </div>
       </div>
-      
+
       <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl">
         <h4 className="text-white font-medium text-sm mb-2">Generation Complete</h4>
         <p className="text-white/70 text-xs">
@@ -923,7 +926,7 @@ export default function PromptCard({
         </div>
       </div>
 
-       {/* Multi-State Modal */}
+      {/* Multi-State Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
@@ -948,10 +951,10 @@ export default function PromptCard({
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-white">
-                    {modalState === 'loading' 
-                      ? 'Generating...' 
-                      : modalState === 'result' 
-                        ? 'Generation Complete' 
+                    {modalState === 'loading'
+                      ? 'Generating...'
+                      : modalState === 'result'
+                        ? 'Generation Complete'
                         : title
                     }
                   </h2>
@@ -995,11 +998,10 @@ export default function PromptCard({
                     <button
                       onClick={handleGenerate}
                       disabled={!uploadedImage}
-                      className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${
-                        uploadedImage
-                          ? "bg-white text-black hover:bg-white/90"
-                          : "bg-white/30 text-white/50 cursor-not-allowed"
-                      }`}
+                      className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${uploadedImage
+                        ? "bg-white text-black hover:bg-white/90"
+                        : "bg-white/30 text-white/50 cursor-not-allowed"
+                        }`}
                     >
                       <Zap className="w-4 h-4" />
                       <span>Generate</span>
