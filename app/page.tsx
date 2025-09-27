@@ -314,7 +314,7 @@ const PromptExchange = () => {
         {/* Enhanced tagline */}
         <div className="relative mb-12">
           <p className="text-2xl md:text-3xl text-white/95 mb-2 font-medium tracking-wide">
-            Unlock Creativity. Monetize Ideas.
+            Unlock Creativity. Monetize Ideas
           </p>
           <p className="text-lg md:text-xl text-blue-200/80 font-light">
             The Future of Prompt Commerce
@@ -324,10 +324,11 @@ const PromptExchange = () => {
         {/* Enhanced description */}
         <div className="max-w-4xl mb-16">
           <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed font-light">
-            Transform your AI prompts into profit. Whether you're creating
-            stunning images, generating code, or crafting compelling copy - your
-            expertise has value. Join the revolution where creativity meets
-            commerce.
+            Transform your AI image prompts into profit. Whether you're creating
+            breathtaking visuals, captivating art, or unique digital designs,
+            your creativity has real value. Join the revolution where
+            imagination meets commerce, and every prompt unlocks new
+            opportunities
           </p>
 
           {/* Enhanced CTA Button */}
