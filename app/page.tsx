@@ -273,14 +273,14 @@ const PromptExchange = () => {
         <div className="flex items-center">
           {/* GitHub-like logo */}
           <div className="w-44 h-44 mr-4 relative overflow-hidden">
-  <Image
-    src="/logo.png"
-    alt="logo"
-    fill
-    style={{ objectFit: "contain" }}
-    className="object-contain"
-  />
-</div>
+            <Image
+              src="/logo.png"
+              alt="logo"
+              fill
+              style={{ objectFit: "contain" }}
+              className="object-contain"
+            />
+          </div>
         </div>
       </header>
 
