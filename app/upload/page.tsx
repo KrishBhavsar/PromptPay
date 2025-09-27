@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Upload, Image, ArrowLeft, Brain, Sparkles } from "lucide-react";
-import { UserPill } from "@privy-io/react-auth/ui";
+import { X, Upload, Image, ArrowLeft, Brain, Sparkles, Loader2 } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import { generatePromptPreview } from "../../lib/utils/generatePromptImage";
 
 export default function UploadPage() {
   const { ready, authenticated } = usePrivy();
@@ -17,6 +17,10 @@ export default function UploadPage() {
   });
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [showModelModal, setShowModelModal] = useState(false);
+  const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,12 +42,38 @@ export default function UploadPage() {
     setShowModelModal(true);
   };
 
+  const handleGenerateImage = async () => {
+    if (!uploadForm.thumbnail || !uploadForm.description) {
+      setGenerationError("Please provide both a thumbnail image and prompt description");
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerationError("");
+    setShowModelModal(false);
+
+    try {
+      const result = await generatePromptPreview(uploadForm.thumbnail, uploadForm.description);
+      setGeneratedImage(result.imageBase64);
+      setShowImagePreviewModal(true);
+    } catch (error) {
+      setGenerationError(error instanceof Error ? error.message : "Failed to generate image");
+      setShowModelModal(true); // Show modal again with error
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleConfirmUpload = () => {
     // Handle actual form submission here
     console.log("Uploading prompt:", uploadForm);
+    console.log("Generated image:", generatedImage);
+
     // Reset form and redirect back to marketplace
     setUploadForm({ title: "", description: "", price: "", thumbnail: null });
     setThumbnailPreview("");
+    setGeneratedImage("");
+    setShowImagePreviewModal(false);
     setShowModelModal(false);
     router.push("/marketplace");
   };
@@ -354,7 +384,7 @@ export default function UploadPage() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                   accept="image/png"
                     onChange={handleThumbnailChange}
                     className="hidden"
                   />
@@ -423,13 +453,6 @@ export default function UploadPage() {
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end space-x-6 pt-8">
-                {/* <button
-                  type="button"
-                  onClick={handleBack}
-                  className="px-8 py-4 text-slate-300 hover:text-slate-100 font-semibold text-lg transition-colors duration-200"
-                >
-                  Cancel
-                </button> */}
                 <button
                   type="button"
                   onClick={handleSubmitPrompt}
@@ -453,7 +476,10 @@ export default function UploadPage() {
 
             {/* Close button */}
             <button
-              onClick={() => setShowModelModal(false)}
+              onClick={() => {
+                setShowModelModal(false);
+                setGenerationError("");
+              }}
               className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors duration-200 z-10"
             >
               <X className="w-5 h-5 text-slate-400 hover:text-white" />
@@ -473,6 +499,13 @@ export default function UploadPage() {
                   This prompt will be optimized for the selected model
                 </p>
               </div>
+
+              {/* Error Message */}
+              {generationError && (
+                <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 mb-6">
+                  <p className="text-red-300 text-sm">{generationError}</p>
+                </div>
+              )}
 
               {/* Model Card */}
               <div className="bg-gradient-to-r from-slate-800/60 to-gray-800/60 border border-slate-600/40 rounded-xl p-6 mb-8">
@@ -510,14 +543,118 @@ export default function UploadPage() {
               {/* Action Buttons */}
               <div className="flex space-x-3">
                 <button
-                  onClick={() => setShowModelModal(false)}
+                  onClick={() => {
+                    setShowModelModal(false);
+                    setGenerationError("");
+                  }}
                   className="flex-1 px-6 py-3 text-slate-300 hover:text-slate-100 font-medium transition-colors duration-200 border border-slate-600/40 rounded-lg hover:bg-slate-800/40"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleConfirmUpload}
+                  onClick={handleGenerateImage}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600/90 to-purple-600/90 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center space-x-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Generate Image</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {isGenerating && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative bg-gradient-to-br from-slate-900/98 via-gray-900/98 to-slate-800/98 backdrop-blur-2xl border border-slate-600/50 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
+            {/* Loading Content */}
+            <div className="relative p-8 text-center">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-100 mb-2">
+                Generating Preview
+              </h3>
+              <p className="text-slate-400">
+                AI is creating your prompt preview image...
+              </p>
+              <div className="mt-6 bg-slate-800/40 rounded-lg p-4">
+                <div className="flex items-center justify-center space-x-2 text-slate-300">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <p className="text-slate-400 text-sm mt-2">This may take a few seconds...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Preview Modal */}
+      {showImagePreviewModal && generatedImage && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative bg-gradient-to-br from-slate-900/98 via-gray-900/98 to-slate-800/98 backdrop-blur-2xl border border-slate-600/50 rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
+            {/* Close button */}
+            <button
+              onClick={() => {
+                setShowImagePreviewModal(false);
+                setGeneratedImage("");
+              }}
+              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors duration-200 z-10"
+            >
+              <X className="w-5 h-5 text-slate-400 hover:text-white" />
+            </button>
+
+            {/* Modal Content */}
+            <div className="relative p-8">
+              {/* Header */}
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-slate-100 mb-2">
+                  Generated Preview
+                </h3>
+                <p className="text-slate-400 text-sm">
+                  Review your AI-generated prompt preview
+                </p>
+              </div>
+
+              {/* Generated Image */}
+              <div className="relative bg-slate-800/40 rounded-xl p-4 mb-6">
+                <img
+                  src={`data:image/png;base64,${generatedImage}`}
+                  alt="Generated preview"
+                  className="w-full max-h-96 object-contain rounded-lg"
+                />
+              </div>
+
+              {/* Prompt Info */}
+              <div className="bg-slate-800/40 rounded-lg p-4 mb-6">
+                <h4 className="text-slate-200 font-semibold mb-2">Your Prompt:</h4>
+                <p className="text-slate-300 text-sm">{uploadForm.description}</p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowImagePreviewModal(false);
+                    setGeneratedImage("");
+                    setShowModelModal(true);
+                  }}
+                  className="flex-1 px-6 py-3 text-slate-300 hover:text-slate-100 font-medium transition-colors duration-200 border border-slate-600/40 rounded-lg hover:bg-slate-800/40"
+                >
+                  Regenerate
+                </button>
+                <button
+                  onClick={handleConfirmUpload}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-600/90 to-blue-600/90 hover:from-emerald-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center space-x-2"
                 >
                   <Upload className="w-4 h-4" />
                   <span>Confirm Upload</span>
