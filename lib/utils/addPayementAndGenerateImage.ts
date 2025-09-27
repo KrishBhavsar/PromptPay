@@ -20,6 +20,7 @@ interface ApiError {
 interface PaymentImageParams {
     txnHash: string;
     imageBase64user: string;
+    promptHash: string;
 }
 
 // Result type
@@ -36,13 +37,13 @@ type PaymentImageResult =
 export async function addPaymentAndGenerateImage(
     params: PaymentImageParams,
 ): Promise<PaymentImageResult> {
-    const { txnHash, imageBase64user } = params;
+    const { txnHash, imageBase64user, promptHash } = params;
 
     try {
         // Step 1: Add payment details
         console.log('Adding payment details for txnHash:', txnHash);
 
-        const paymentResponse = await fetch(`/addPayment`, {
+        const paymentResponse = await fetch(`/api/addPayment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,13 +73,13 @@ export async function addPaymentAndGenerateImage(
         console.log('Payment validated successfully, generating image...');
 
         // Step 2: Generate image
-        const imageResponse = await fetch(`/generateImage`, {
+        const imageResponse = await fetch(`/api/generateImage`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                hash: txnHash,
+                hash: promptHash,
                 imageBase64user,
                 txnHash,
             }),

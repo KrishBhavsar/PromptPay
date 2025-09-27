@@ -101,7 +101,7 @@ export default function UploadPage() {
         title: uploadForm.title,
         description: '',
         model: "gemini-2.5",
-        price: BigInt(parseFloat(uploadForm.price) * 1e9), // Convert ETH to wei
+        price: BigInt(parseFloat(uploadForm.price) * 1e6),
         filecoinHash: hash.hash,
         image: response.url,
       });
@@ -429,7 +429,7 @@ export default function UploadPage() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/png"
+                    accept="image/png image/jpeg"
                     onChange={handleThumbnailChange}
                     className="hidden"
                   />
@@ -688,10 +688,10 @@ export default function UploadPage() {
               {/* Generated Image */}
               <div className="relative bg-slate-800/40 rounded-xl p-4 mb-6">
                 <img
-  src={generatedImage.startsWith('data:') ? generatedImage : `data:image/png;base64,${generatedImage}`}
-  alt="Generated preview"
-  className="w-full max-h-96 object-contain rounded-lg"
-/>
+                  src={generatedImage.startsWith('data:') ? generatedImage : `data:image/png;base64,${generatedImage}`}
+                  alt="Generated preview"
+                  className="w-full max-h-96 object-contain rounded-lg"
+                />
               </div>
 
               {/* Prompt Info */}

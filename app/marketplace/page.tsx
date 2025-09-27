@@ -27,6 +27,7 @@ interface PromptCardData {
   description?: string;
   rating?: number;
   isPrivate?: boolean;
+  hash: string;
 }
 
 export default function Marketplace() {
@@ -67,12 +68,13 @@ export default function Marketplace() {
     return prompts.map((prompt) => ({
       id: Number(prompt.id),
       title: prompt.title,
-      price: Number(prompt.price) / 100, // Assuming price is in cents
+      price: Number(prompt.price),
       creator: prompt.creator.slice(0, 6) + "..." + prompt.creator.slice(-4), // Truncate address
       creatorAvatar: prompt.creator.slice(2, 4).toUpperCase(), // Use first 2 chars after 0x
       image: prompt.image, // Assuming IPFS hash for image
       rating: undefined, // You might want to add rating logic
       isPrivate: !prompt.isActive,
+      hash: prompt.filecoinHash,
     }));
   };
 
@@ -497,8 +499,9 @@ export default function Marketplace() {
                 image={prompt.image}
                 rating={prompt.rating}
                 isPrivate={prompt.isPrivate}
-                // Implement Payment Buy stuff here
-                // onBuyRun={}
+                hash={prompt.hash}
+              // Implement Payment Buy stuff here
+              // onBuyRun={}
               />
             ))}
           </div>

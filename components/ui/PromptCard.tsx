@@ -34,6 +34,7 @@ interface PromptCardProps {
   rating?: number;
   isPrivate?: boolean;
   onBuyRun?: () => void;
+  hash: string;
 }
 
 export default function PromptCard({
@@ -47,6 +48,7 @@ export default function PromptCard({
   rating,
   isPrivate,
   onBuyRun,
+  hash
 }: PromptCardProps) {
   console.log("Image URL:", image);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +60,9 @@ export default function PromptCard({
   const { buyPrompt } = useBuyPrompt();
 
   // Convert price from wei to a more readable format
-  const displayPrice = (price / 1000000).toFixed(2);
+  console.log("Raw price:", price);
+
+  const displayPrice = (price / 1e6).toFixed(2);
 
   const handleBuyRunClick = () => {
     setIsModalOpen(true);
@@ -117,7 +121,7 @@ export default function PromptCard({
 
     console.log("result", result);
 
-    const imageResponse = await addPaymentAndGenerateImage({ txnHash: result as string, imageBase64user: uploadedImage });
+    const imageResponse = await addPaymentAndGenerateImage({ txnHash: result as string, imageBase64user: uploadedImage, promptHash: hash });
 
     if (imageResponse.success) {
       console.log("Generated image data:", imageResponse.data);

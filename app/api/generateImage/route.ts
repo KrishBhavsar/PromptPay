@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         // Forward the request to your backend
-        const response = await fetch(`${BACKEND_URL}/generateImage`, {
+        const response = await fetch(`${BACKEND_URL}/generate-image`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
