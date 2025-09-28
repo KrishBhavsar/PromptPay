@@ -50,6 +50,7 @@ export default function PromptCard({
   console.log("Image URL:", image);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState<string>("");
   const [modalState, setModalState] = useState<
     "upload" | "loading" | "result" | "share"
@@ -97,6 +98,8 @@ export default function PromptCard({
         return;
       }
 
+      setUploadedImageFile(file);
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setUploadedImage(e.target?.result as string);
@@ -121,7 +124,7 @@ export default function PromptCard({
 
     console.log("result", result);
 
-    const imageResponse = await addPaymentAndGenerateImage({ txnHash: result as string, imageBase64user: uploadedImage, promptHash: hash });
+    const imageResponse = await addPaymentAndGenerateImage({ txnHash: result as string, imageBase64user: uploadedImageFile, promptHash: hash });
 
     if (imageResponse.success) {
       console.log("Generated image data:", imageResponse.data);

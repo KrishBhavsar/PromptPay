@@ -1,3 +1,5 @@
+import { fileToBase64 } from "./generatePromptImage";
+
 interface PaymentResponse {
     success: boolean;
     txnHash: string;
@@ -19,7 +21,7 @@ interface ApiError {
 // Input parameters interface
 interface PaymentImageParams {
     txnHash: string;
-    imageBase64user: string;
+    imageBase64user: File;
     promptHash: string;
 }
 
@@ -72,6 +74,9 @@ export async function addPaymentAndGenerateImage(
 
         console.log('Payment validated successfully, generating image...');
 
+
+        const base64Image = await fileToBase64(imageBase64user);
+
         // Step 2: Generate image
         const imageResponse = await fetch(`/api/generateImage`, {
             method: 'POST',
@@ -80,7 +85,7 @@ export async function addPaymentAndGenerateImage(
             },
             body: JSON.stringify({
                 hash: promptHash,
-                imageBase64user,
+                imageBase64user: base64Image,
                 txnHash,
             }),
         });
