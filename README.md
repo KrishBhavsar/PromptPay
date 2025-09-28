@@ -18,7 +18,8 @@ PromptPay connects prompt creators with users who want better AI results. Creato
 - **Smart Contracts:** Solidity
 
 ## Contract Addresses
-- **PromptPay Contract:** `0xa8614eA116C8d5812FF80d14953bA7ae46491bae`
+- **PromptPay Contract(Sepolia):** `0xa8614eA116C8d5812FF80d14953bA7ae46491bae`
+-  **PromptPay Contract(Flow):** `0x97057815448c61c661552a50e67Ec5A4247e37eC`
 - **PayPal USDC (PYUSD):** `0xCaC524BcA292aaade2DF8A05cC58F0a65B1B3bB9`
 
 ## Features
