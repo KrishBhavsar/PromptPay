@@ -1,5 +1,16 @@
-import React from "react";
-import { Trophy, Medal, Award, X, RefreshCw, AlertCircle } from "lucide-react";
+// @ts-nocheck
+
+import React, { useState } from "react";
+import {
+  Trophy,
+  Medal,
+  Award,
+  X,
+  RefreshCw,
+  AlertCircle,
+  Database,
+  Wifi,
+} from "lucide-react";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 
 interface LeaderboardProps {
@@ -7,13 +18,106 @@ interface LeaderboardProps {
   onClose: () => void;
 }
 
+interface LeaderboardEntry {
+  id: number;
+  address: string;
+  points: number;
+  rank?: number;
+  score?: number;
+}
+
+// Mock data - replace with actual data source
+const mockLeaderboardData: LeaderboardEntry[] = [
+  {
+    id: 1,
+    address: "0x742d35Cc6634C0532925a3b8D432C3e0a32C0532",
+    points: 2450,
+    rank: 1,
+    score: 2450,
+  },
+  {
+    id: 2,
+    address: "0x8ba1f109551bD432C3Cc6634C0532925a3b8D4321",
+    points: 2180,
+    rank: 2,
+    score: 2180,
+  },
+  {
+    id: 3,
+    address: "0x439c62F5C929C3e0a32C053295a3b8D432C3e0a3",
+    points: 1950,
+    rank: 3,
+    score: 1950,
+  },
+  {
+    id: 4,
+    address: "0x123d35Cc6634C0532925a3b8D432C3e0a32C0789",
+    points: 1720,
+    rank: 4,
+    score: 1720,
+  },
+  {
+    id: 5,
+    address: "0x567d35Cc6634C0532925a3b8D432C3e0a32C0456",
+    points: 1540,
+    rank: 5,
+    score: 1540,
+  },
+  {
+    id: 6,
+    address: "0x891d35Cc6634C0532925a3b8D432C3e0a32C0123",
+    points: 1320,
+    rank: 6,
+    score: 1320,
+  },
+  {
+    id: 7,
+    address: "0x234d35Cc6634C0532925a3b8D432C3e0a32C0890",
+    points: 1180,
+    rank: 7,
+    score: 1180,
+  },
+  {
+    id: 8,
+    address: "0x678d35Cc6634C0532925a3b8D432C3e0a32C0567",
+    points: 1050,
+    rank: 8,
+    score: 1050,
+  },
+  {
+    id: 9,
+    address: "0x345d35Cc6634C0532925a3b8D432C3e0a32C0234",
+    points: 920,
+    rank: 9,
+    score: 920,
+  },
+  {
+    id: 10,
+    address: "0x901d35Cc6634C0532925a3b8D432C3e0a32C0678",
+    points: 850,
+    rank: 10,
+    score: 850,
+  },
+];
+
 const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
-  const { data, loading, error, refetch } = useLeaderboard({
+  // Boolean state to toggle between mock data and API data
+  const [useMockData, setUseMockData] = useState(true);
+
+  const {
+    data: apiData,
+    loading,
+    error,
+    refetch,
+  } = useLeaderboard({
     baseUrl: "https://f2f43feb68e2.ngrok-free.app",
     refreshInterval: 30000, // Auto-refresh every 30 seconds
   });
 
   if (!isOpen) return null;
+
+  // Use mock data if the toggle is enabled, otherwise use API data
+  const data = useMockData ? mockLeaderboardData : apiData;
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -50,7 +154,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
   };
 
   const renderContent = () => {
-    if (loading && !data) {
+    // Only show loading state if we're using API data
+    if (!useMockData && loading && !apiData) {
       return (
         <div className="flex flex-col items-center justify-center py-16">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mb-4"></div>
@@ -62,7 +167,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
       );
     }
 
-    if (error) {
+    // Only show error state if we're using API data
+    if (!useMockData && error) {
       return (
         <div className="flex flex-col items-center justify-center py-16">
           <AlertCircle className="w-16 h-16 text-red-400 mb-4" />
@@ -95,7 +201,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
       );
     }
 
-    const totalPoints = data.reduce((sum, entry) => sum + entry.score, 0);
+    const totalPoints = data.reduce(
+      (sum, entry) => sum + (entry.score || entry.points),
+      0
+    );
     const averagePoints = Math.round(totalPoints / data.length);
 
     return (
@@ -111,14 +220,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
         <div className="space-y-3">
           {data.map((entry) => (
             <div
-              key={entry.address}
+              key={entry?.address}
               className={`grid grid-cols-12 gap-4 px-6 py-4 backdrop-blur-sm border rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${getRankStyle(
-                entry.rank
+                entry?.rank || entry?.id
               )}`}
             >
               {/* Rank */}
               <div className="col-span-1 flex items-center">
-                {getRankIcon(entry.rank)}
+                {getRankIcon(entry?.rank || entry?.id)}
               </div>
 
               {/* Address */}
@@ -126,15 +235,15 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center space-x-3">
                   {/* Avatar */}
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded-full flex items-center justify-center text-white font-bold text-sm border border-white/20">
-                    {entry.address.slice(2, 4).toUpperCase()}
+                    {entry?.address?.slice(2, 4)?.toUpperCase()}
                   </div>
                   {/* Address Text */}
                   <div>
                     <div className="text-slate-100 font-medium">
-                      {formatAddress(entry.address)}
+                      {formatAddress(entry?.address)}
                     </div>
                     <div className="text-slate-400 text-xs">
-                      Rank #{entry.rank}
+                      Rank #{entry?.rank || entry?.id}
                     </div>
                   </div>
                 </div>
@@ -144,7 +253,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
               <div className="col-span-4 flex items-center justify-end">
                 <div className="text-right">
                   <div className="text-slate-100 font-bold text-lg">
-                    {entry.score.toLocaleString()}
+                    {(entry?.score || entry?.points)?.toLocaleString()}
                   </div>
                   <div className="text-slate-400 text-xs">points</div>
                 </div>
@@ -164,13 +273,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
             </div>
             <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
               <div className="text-2xl font-bold text-slate-100">
-                {totalPoints.toLocaleString()}
+                {totalPoints?.toLocaleString()}
               </div>
               <div className="text-slate-400 text-sm">Total Points</div>
             </div>
             <div className="text-center p-4 bg-slate-800/30 backdrop-blur-sm border border-slate-600/30 rounded-xl">
               <div className="text-2xl font-bold text-slate-100">
-                {averagePoints.toLocaleString()}
+                {averagePoints?.toLocaleString()}
               </div>
               <div className="text-slate-400 text-sm">Average Points</div>
             </div>
@@ -229,30 +338,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
               <h2 className="text-2xl font-bold text-slate-100">Leaderboard</h2>
               <p className="text-slate-300/80 text-sm mt-1">
                 Top performers in our community
+                {useMockData && (
+                  <span className="ml-2 px-2 py-0.5 bg-blue-600/20 text-blue-300 text-xs rounded-full border border-blue-500/30">
+                    Mock Data
+                  </span>
+                )}
               </p>
             </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            {/* Refresh Button */}
-            <button
-              onClick={refetch}
-              disabled={loading}
-              className="p-2 hover:bg-slate-700/50 rounded-full transition-all duration-200 group disabled:opacity-50"
-              title="Refresh leaderboard"
-            >
-              <RefreshCw
-                className={`w-5 h-5 text-slate-400 group-hover:text-slate-200 ${
-                  loading ? "animate-spin" : ""
-                }`}
-              />
-            </button>
-            {/* Close Button */}
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-slate-700/50 rounded-full transition-colors duration-200 group"
-            >
-              <X className="w-6 h-6 text-slate-400 group-hover:text-slate-200" />
-            </button>
           </div>
         </div>
 

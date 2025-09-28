@@ -1,9 +1,7 @@
 # PromptPay
-
-The first blockchain marketplace for AI prompts. Buy and sell high-quality prompts with instant payments.
+A permissionless marketplace for AI prompts. Buy and sell high-quality prompts with instant payments.
 
 ## What is PromptPay?
-
 PromptPay connects prompt creators with users who want better AI results. Creators upload their best prompts and earn money when people buy them. Users get access to proven prompts that actually work.
 
 **The Problem:** Great prompt engineers share their work for free while users spend hours trying to recreate viral AI outputs.
@@ -11,18 +9,20 @@ PromptPay connects prompt creators with users who want better AI results. Creato
 **Our Solution:** A marketplace where both sides win.
 
 ## Architecture
-
-![PromptPay Architecture](/arch.png)
+![PromptPay Architecture](public/arch.png)
 
 ## Tech Stack
-
 - **Blockchain:** Flow (primary) + Polygon
 - **Payments:** PayPal USD (PYUSD)
 - **Storage:** Filecoin + IPFS
 - **Smart Contracts:** Solidity
 
-## Features
+## Contract Addresses
+- **PromptPay Contract(Sepolia):** `0xa8614eA116C8d5812FF80d14953bA7ae46491bae`
+-  **PromptPay Contract(Flow):** `0x97057815448c61c661552a50e67Ec5A4247e37eC`
+- **PayPal USDC (PYUSD):** `0xCaC524BcA292aaade2DF8A05cC58F0a65B1B3bB9`
 
+## Features
 **For Creators:**
 - Upload prompts with examples
 - Set your own prices
@@ -36,9 +36,8 @@ PromptPay connects prompt creators with users who want better AI results. Creato
 - Get prompts immediately
 
 ## Quick Start
-
 ```bash
-git clone https://github.com/yourusername/promptpay.git
+git clone https://github.com/KrishBhavsar/PromptPay.git
 cd promptpay
 npm install
 cp .env.example .env
@@ -46,23 +45,20 @@ npm run dev
 ```
 
 ## Environment Variables
-
 ```
-FLOW_NETWORK=testnet
-POLYGON_RPC_URL=your_polygon_url
-PYUSD_CONTRACT_ADDRESS=your_contract_address
-FILECOIN_API_KEY=your_filecoin_key
+NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+NEXT_PUBLIC_CLOUDINARY_API_KEY=your_cloudinary_api_key
+NEXT_PUBLIC_CLOUDINARY_API_SECRET==your_cloudinary_api_secret
 ```
 
 ## How It Works
-
 1. **Creators** upload prompts with sample outputs and set prices
 2. **Prompts** are encrypted and stored on Filecoin
 3. **Buyers** browse, preview, and purchase with PYUSD
 4. **Smart contracts** handle payments and unlock prompts instantly
 
 ## Why PromptPay?
-
 - **Low fees:** 2.5% vs 30% on app stores
 - **Instant payments:** No waiting periods
 - **Global access:** Works anywhere
@@ -70,24 +66,18 @@ FILECOIN_API_KEY=your_filecoin_key
 - **Stable payments:** PYUSD eliminates volatility
 
 ## Business Model
-
 - 2.5% fee per transaction
 - Premium creator tools
 - Enterprise solutions
 
 ## Contributing
-
 1. Fork the repo
 2. Create a feature branch
 3. Make your changes
 4. Submit a pull request
 
 ## Links
-
-- Website: promptpay.app
-- Docs: docs.promptpay.app
-- Discord: discord.gg/promptpay
+- Website: https://prompt-payy.vercel.app
 
 ## License
-
 MIT License

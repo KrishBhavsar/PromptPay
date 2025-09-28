@@ -19,6 +19,7 @@ interface UseLeaderboardOptions {
   refreshInterval?: number;
   // Whether to fetch immediately on mount
   enabled?: boolean;
+  baseUrl?: string;
 }
 
 export const useLeaderboard = (
